@@ -1,3 +1,5 @@
+require 'bigdecimal'
+require 'bigdecimal/util'
 require 'time'
 
 module KicadPcb
@@ -129,10 +131,10 @@ module KicadPcb
       setting_drillshape: "1",
       setting_scaleselection: "1",
       setting_outputdirectory: '""',
-      board_origin_x: "10",
-      board_origin_y: "10",
-      board_height: "128.5", # 3U panel height according the the Doepfer "Construction Details A-100" page
-      board_width: "20", # 8hp panel width according the the Doepfer "Construction Details A-100" page
+      board_origin_x: "25", # just a little inside the A4 page
+      board_origin_y: "25", # just a little inside the A4 page
+      board_height: "100", # best deal per size at low volumes
+      board_width: "100" # best deal per size at low volumes
     )
       @setting_thickness = setting_thickness
       @setting_drawings = setting_drawings
@@ -271,12 +273,24 @@ module KicadPcb
     end
 
     #TODO: Make these lines adjustable
+    # def edge_cuts
+    #   return <<~EOF_EDGE_CUTS.chomp
+    #   (gr_line (start 13 28) (end 13 13) (layer Edge.Cuts) (width 0.05) (tstamp #{current_tstamp}))
+    #   (gr_line (start 23 28) (end 13 28) (layer Edge.Cuts) (width 0.05))
+    #   (gr_line (start 23 13) (end 23 28) (layer Edge.Cuts) (width 0.05))
+    #   (gr_line (start 13 13) (end 23 13) (layer Edge.Cuts) (width 0.05))
+    #   EOF_EDGE_CUTS
+    # end
     def edge_cuts
+      x1 = @board_origin_x.to_d
+      y1 = @board_origin_y.to_d
+      x2 = x1 + @board_width.to_d
+      y2 = y1 + @board_height.to_d
       return <<~EOF_EDGE_CUTS.chomp
-      (gr_line (start 13 28) (end 13 13) (layer Edge.Cuts) (width 0.05) (tstamp #{current_tstamp}))
-      (gr_line (start 23 28) (end 13 28) (layer Edge.Cuts) (width 0.05))
-      (gr_line (start 23 13) (end 23 28) (layer Edge.Cuts) (width 0.05))
-      (gr_line (start 13 13) (end 23 13) (layer Edge.Cuts) (width 0.05))
+      (gr_line (start #{num_to_s(x1)} #{num_to_s(y1)}) (end #{num_to_s(x1)} #{num_to_s(y2)}) (layer Edge.Cuts) (width 0.05) (tstamp #{current_tstamp}))
+      (gr_line (start #{num_to_s(x2)} #{num_to_s(y1)}) (end #{num_to_s(x1)} #{num_to_s(y1)}) (layer Edge.Cuts) (width 0.05))
+      (gr_line (start #{num_to_s(x2)} #{num_to_s(y2)}) (end #{num_to_s(x2)} #{num_to_s(y1)}) (layer Edge.Cuts) (width 0.05))
+      (gr_line (start #{num_to_s(x1)} #{num_to_s(y2)}) (end #{num_to_s(x2)} #{num_to_s(y2)}) (layer Edge.Cuts) (width 0.05))
       EOF_EDGE_CUTS
     end
 
@@ -329,6 +343,20 @@ module KicadPcb
     # (kicad tstamp is seconds since unix epoch in hexadecimal)
     def current_tstamp
       Time.now.to_i.to_s(16).upcase
+    end
+
+    # Convert a number to a string that shows no more than so many decimal places (default: 4)
+    # Works well for BigDecimals as well as normal Numerics.
+    def num_to_s(num, places = 4)
+      # Follows this structure: (bigdecimal.to_s("F") + "0000")[/.*\..{4}/]
+      num.to_d.truncate(places).to_s("F")
+    end
+
+    # Convert a number to a string that shows exactly so many decimal places (default: 4)
+    # Works well for BigDecimals as well as normal Numerics.
+    def num_to_s_fixed_places(num, places = 4)
+      # Follows this structure: (bigdecimal.to_s("F") + "0000")[/.*\..{4}/]
+      (num.to_d.to_s("F") + ("0" * places))[/.*\..{#{places}}/]
     end
 
   end
