@@ -5,7 +5,6 @@ require_relative './lib/kicad_pcb.rb'
 # If no size is specified, it makes it 100mm x 100mm.
 #
 
-
 # Parse all the options before doing anything else.
 # -------------------------------------------------
 
@@ -47,8 +46,6 @@ OptionParser.new do |opts|
 
 end.parse!
 
-# TODO: make an autoextension option that adds the .kicad_pcb extension to the filename
-
 if (options[:output_file] && options[:auto_extension])
   # quick and easy way:
   options[:output_file] = "#{options[:output_file]}.kicad_pcb"
@@ -62,6 +59,8 @@ if File.exists?(options[:output_file].to_s)
   abort "Output file already exists."
 end
 
+# Do things
+# -------------------------------------------------
 
 the_pcb = KicadPcb::Pcb.new
 
