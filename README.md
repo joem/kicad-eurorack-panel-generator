@@ -33,7 +33,7 @@ This generates a PCB of the specified size. If no size is specified, it makes it
 
 This generates a eurorack panel sized correctly for the specified HP and optional formal (3U / Intellijel 1U / Pulp Logic 1U -- default is 3U).  The panel includes mounting holes.
 
-NOTE: Mounting holes currently are not implemented!
+*NOTE: Mounting holes currently are not implemented!*
 
 Possible formats:
 
@@ -63,7 +63,7 @@ Possible hole sizes:
 This will generates a eurorack panel sized correctly to fit the specified PCB. Right now it's just a placeholder.
 
 
-## lib/eurorack.rb
+## `lib/eurorack.rb`
 
 This module contains all eurorack-specific constants/classes/methods/info I'm using.
 
