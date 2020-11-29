@@ -20,6 +20,7 @@ module Eurorack
   # 1U specs (Intellijel): https://intellijel.com/support/1u-technical-specifications/
   # 1U specs (Pulp Logic): http://pulplogic.com/1u_tiles/
 
+  #TODO: Is tis needed??
   def self.valid_pcb_height?(pcb_height, format = :standard_3u)
     case format
     when :standard_3u
@@ -56,6 +57,7 @@ module Eurorack
   #
   # Output is as a BigDecimal, to preserve floating point accuracy.
   #
+  #TODO: Make this handle low HP's better... esp. 1 HP is way off from Doepfer's chart.
   def self.panel_hp_to_mm(input, reduction_mm = EURORACK_PANEL_WIDTH_REDUCTION)
     case input
     when Numeric, BigDecimal
