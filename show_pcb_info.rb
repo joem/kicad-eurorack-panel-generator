@@ -103,7 +103,7 @@ end
 @x_length = @x_max - @x_min
 @y_length = @y_max - @y_min
 
-# if [@x_length, @y_length].min > Eurorack::MAX_PCB_HEIGHT_3U
+# if [@x_length, @y_length].min > Eurorack::MAX_PCB_HEIGHT['3U']
 #   abort "Board won't fit in eurorack space"
 # end
 
@@ -117,7 +117,7 @@ puts "Y length: #{num_to_s(@y_length)} mm"
 # @hp = nil
 # @x_dimensions = "x-coords"
 
-# if @y_length < Eurorack::MAX_PCB_HEIGHT_3U
+# if @y_length < Eurorack::MAX_PCB_HEIGHT['3U']
 #   # assume y will be the height, so see how many hp x takes up
 #   @hp = Eurorack.minimum_hp(@x_length)
 # else

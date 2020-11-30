@@ -113,25 +113,34 @@ unless ['auto', 'left', 'right', 'both', 'none'].include? @options[:mounting_hol
   abort "Aborting. Invalid hole type specified."
 end
 
+#TODO: Allow more formats of specifying the HP, like 4hp or hp4 instead of just an integer
+#      - will need to abort if improper format is used
+#      - will need to convert whatever format into integer
+
+# Standardize the :format options to nice readable formats
+case @options[:format]
+when '3u', '3U'
+  @options[:format] = '3U'
+when '1ui', '1UI'
+  @options[:format] = 'Intellijel 1U'
+when '1up', '1UP'
+  @options[:format] = 'Pulp Logic 1U'
+end
+
+
 # Generate the PCB object
 # -------------------------------------------------
 
 @the_pcb = KicadPcb::Pcb.new
 
-if @options[:width_hp]
-  @the_pcb.board_width = Eurorack.panel_hp_to_mm(@options[:width_hp]).to_d.to_s('F')
-end
+@the_pcb.board_width = Eurorack.panel_hp_to_mm(@options[:width_hp]).to_d.to_s('F')
 
-case @options[:format]
-when '3u', '3U'
-  @the_pcb.board_height = Eurorack::MAX_PANEL_HEIGHT_3U.to_d.to_s('F')
-when '1ui', '1UI'
-  @the_pcb.board_height = Eurorack::MAX_PANEL_HEIGHT_1U_INTELLIJEL.to_d.to_s('F')
-when '1up', '1UP'
-  @the_pcb.board_height = Eurorack::MAX_PANEL_HEIGHT_1U_PULP_LOGIC.to_d.to_s('F')
-end
+@the_pcb.board_height = Eurorack::MAX_PANEL_HEIGHT[@options[:format]].to_d.to_s('F')
 
 DEFAULT_M3_HOLE_FOOTPRINT = "MountingHole:MountingHole_3.2mm_M3_DIN965"
+
+#TODO: See if these mounting hole rules also apply to Intellijel and Pulp Logic 1U!!!
+#(Intellijel at least should)
 
 def add_left_holes
   if @options[:width_hp].to_i == 1
@@ -174,10 +183,17 @@ end
 # -------------------------------------------------
 
 if @options[:output_file]
-  puts "Writing #{@options[:output_file]}"
+  puts "Generating new panel:"
+  puts "  Format:         #{@options[:format]}"
+  puts "  Width:          #{@options[:width_hp]} HP"
+  puts "  Mounting holes:"
+  puts "        Position: #{@options[:mounting_hole_position]}"
+  puts "        Shape:    Round"
+  print "Writing #{@options[:output_file]} ... "
   File.open(@options[:output_file], 'w+') do |f|
     f.puts @the_pcb.to_s
   end
+  puts "Done!"
 else
   puts @the_pcb.to_s
 end

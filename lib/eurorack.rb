@@ -4,12 +4,23 @@ require_relative './sexpr_parser.rb'
 
 module Eurorack
 
-  MAX_PANEL_HEIGHT_3U = "128.5".to_d # in mm
-  MAX_PCB_HEIGHT_3U = "108".to_d # in mm #NOTE: 108-110 is the rec'd range I found, so add a way to override?
-  MAX_PANEL_HEIGHT_1U_INTELLIJEL = "39.65".to_d # in mm
-  MAX_PCB_HEIGHT_1U_INTELLIJEL = "22.5".to_d # in mm
-  MAX_PANEL_HEIGHT_1U_PULP_LOGIC = "43.18".to_d # in mm
-  MAX_PCB_HEIGHT_1U_PULP_LOGIC = "28.702".to_d # in mm
+  # As often as possible, refer to the formats by these strings:
+  # '3U'
+  # 'Intellijel 1U'
+  # 'Pulp Logic 1U'
+
+  MAX_PANEL_HEIGHT = {
+    '3U'            => "128.5".to_d, # in mm
+    'Intellijel 1U' => "39.65".to_d, # in mm
+    'Pulp Logic 1U' => "43.18".to_d, # in mm
+  }.freeze
+
+  MAX_PCB_HEIGHT = {
+    '3U'            => "108".to_d, # in mm #NOTE: 108-110 is the rec'd range I found, so add a way to override?
+    'Intellijel 1U' => "22.5".to_d, # in mm
+    'Pulp Logic 1U' => "28.702".to_d, # in mm
+  }.freeze
+
   HP_IN_MM = "5.08".to_d # in mm
   PANEL_WIDTH_REDUCTION = "0.3".to_d # in mm
   LEFT_MOUNTING_HOLE_OFFESET = "7.5".to_d # in mm
@@ -19,16 +30,8 @@ module Eurorack
   # 1U specs (Intellijel): https://intellijel.com/support/1u-technical-specifications/
   # 1U specs (Pulp Logic): http://pulplogic.com/1u_tiles/
 
-  #TODO: Is tis needed??
-  def self.valid_pcb_height?(pcb_height, format = :standard_3u)
-    case format
-    when :standard_3u
-      pcb_height.to_d <= MAX_PCB_HEIGHT_3U
-    when :intellijel_1u
-      pcb_height.to_d <= MAX_PCB_HEIGHT_1U_INTELLIJEL
-    when :pulp_logic_1u
-      pcb_height.to_d <= MAX_PCB_HEIGHT_1U_PULP_LOGIC
-    end
+  def self.valid_pcb_height?(pcb_height, format = '3U')
+    pcb_height.to_d <= MAX_PCB_HEIGHT[format]
   end
 
   # Given a PCB width in mm, return the minimum HP that the PCB will fit in
