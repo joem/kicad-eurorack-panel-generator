@@ -30,6 +30,28 @@ module Eurorack
   # 1U specs (Intellijel): https://intellijel.com/support/1u-technical-specifications/
   # 1U specs (Pulp Logic): http://pulplogic.com/1u_tiles/
 
+  # Interpret format input and return what my classes use as their 'proper' name.
+  # If format input is invalid, return nil.
+  # (This means the output can be used as a boolean.)
+  #
+  # Possible formats (case insensitive):
+  #   '3u', '3U', 'Eurorack', :eurorack        => '3U'
+  #   '1ui', '1UI', 'Intellijel', :intellijel  => 'Intellijel 1U'
+  #   '1up', '1UP', 'Pulplogic', :pulplogic    => 'Pulp Logic 1U'
+  #
+  def self.valid_format(format_input)
+    case format_input.to_s.downcase
+    when '3u', 'eurorack'
+      '3U'
+    when '1ui', 'intellijel'
+      'Intellijel 1U'
+    when '1up', 'pulplogic'
+      'Pulp Logic 1U'
+    else
+      nil
+    end
+  end
+
   def self.valid_pcb_height?(pcb_height, format = '3U')
     pcb_height.to_d <= MAX_PCB_HEIGHT[format]
   end

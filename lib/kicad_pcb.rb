@@ -4,6 +4,10 @@ require 'time'
 require_relative 'kicad_pcb/pcb'
 require_relative 'kicad_pcb/part'
 
+# Some notes about the KiCad PCB file format:
+# - The coordinate system is a screen coordinate with (0,0) in the top left.
+# - The units are always mm regardless of your grid unit settings.
+
 module KicadPcb
 
   # Put shared constants and method here...

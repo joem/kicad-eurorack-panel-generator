@@ -8,15 +8,15 @@ require_relative './lib/eurorack.rb'
 # optional formal (3U / Intellijel 1U / Pulp Logic 1U -- default is 3U).
 # The panel includes mounting holes.
 #
-# Possible formats:
-#   3u or 3U   = standard eurorack 3U
-#   1ui or 1UI = Intellijel 1U
-#   1up or 1UP = Pulp Logic 1U
+# Possible formats (case insensitive):
+#   3u or 3U                 = standard eurorack 3U
+#   1ui or 1UI or Intellijel = Intellijel 1U
+#   1up or 1UP or Pulplogic  = Pulp Logic 1U
 #
-# Possible hole sizes:
+# Possible hole sizes (case insensitive):
 #   m3 or M3   = standard M3 holes
 #
-# Mounting hole position options (default is `auto`):
+# Mounting hole position options (default is `auto`) (case insensitive):
 #   left  = mounting holes only on left
 #   right = mounting holes only on right
 #   both  = both right and left mounting holes
@@ -101,32 +101,33 @@ unless @options[:width_hp]
   abort "Aborting. You must specify a width."
 end
 
-unless ['3u', '1ui', '1up'].include? @options[:format].downcase
-  abort "Aborting. Invalid format specified."
-end
-
-unless ['m3'].include? @options[:hole_size].downcase
-  abort "Aborting. Invalid hole size specified."
-end
-
-unless ['auto', 'left', 'right', 'both', 'none'].include? @options[:mounting_hole_position].downcase
-  abort "Aborting. Invalid hole type specified."
-end
-
 #TODO: Allow more formats of specifying the HP, like 4hp or hp4 instead of just an integer
 #      - will need to abort if improper format is used
 #      - will need to convert whatever format into integer
 
-# Standardize the :format options to nice readable formats
-case @options[:format]
-when '3u', '3U'
-  @options[:format] = '3U'
-when '1ui', '1UI'
-  @options[:format] = 'Intellijel 1U'
-when '1up', '1UP'
-  @options[:format] = 'Pulp Logic 1U'
+@options[:format] = Eurorack.valid_format(@options[:format])
+unless @options[:format]
+  abort "Aborting. Invalid format specified."
 end
 
+#TODO: Move these hole_size checks to KicadPcb or KicadPcb::Pcb or KicadPcb::Part?
+#      - It's a pcb-specific thing, right??
+#      - That way you can probably set a default part that way there?
+# Ensure valid :hole_size input
+unless ['m3'].include? @options[:hole_size].downcase
+  abort "Aborting. Invalid hole size specified."
+end
+
+# Set the :hole_size to the correct strings we'll be using
+@options[:hole_size] = @options[:hole_size].downcase
+
+# Ensure valid :mounting_hole_position input
+unless ['auto', 'left', 'right', 'both', 'none'].include? @options[:mounting_hole_position].downcase
+  abort "Aborting. Invalid hole type specified."
+end
+
+# Set the :mounting_hole_position to the correct strings we'll be using
+@options[:mounting_hole_position] = @options[:mounting_hole_position].downcase
 
 # Generate the PCB object
 # -------------------------------------------------
@@ -188,7 +189,7 @@ if @options[:output_file]
   puts "  Width:          #{@options[:width_hp]} HP"
   puts "  Mounting holes:"
   puts "        Position: #{@options[:mounting_hole_position]}"
-  puts "        Shape:    Round"
+  puts "        Shape:    round" #FIXME: Make this actually come from the settings, and add that setting!
   print "Writing #{@options[:output_file]} ... "
   File.open(@options[:output_file], 'w+') do |f|
     f.puts @the_pcb.to_s
