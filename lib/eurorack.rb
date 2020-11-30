@@ -66,7 +66,11 @@ module Eurorack
     else
       raise "Invalid type for hp sent to panel_hp_to_mm."
     end
-    (hp * HP_IN_MM) - reduction_mm
+    if hp == 1
+      5.to_d # Doepfer has a much smaller reduction for 1hp than for the rest
+    else
+      (hp * HP_IN_MM) - reduction_mm
+    end
   end
 
   # Extract the relevant HP integer from a string or symbol representation of HP.
