@@ -33,29 +33,33 @@ This generates a PCB of the specified size. If no size is specified, it makes it
 
 This generates a eurorack panel sized correctly for the specified HP and optional formal (3U / Intellijel 1U / Pulp Logic 1U -- default is 3U).  The panel includes mounting holes.
 
-*NOTE: Mounting holes currently are not implemented!*
+Formats (default: `3U`)
 
-Possible formats:
+- `3u` or `3U`   = standard eurorack 3U
+- `1ui` or `1UI` = Intellijel 1U
+- `1up` or `1UP` = Pulp Logic 1U
 
-- 3u or 3U   = standard eurorack 3U
-- 1ui or 1UI = Intellijel 1U
-- 1up or 1UP = Pulp Logic 1U
+Mounting hole sizes (default: `M3`):
 
-Possible hole sizes:
+- `m3` or `M3` = standard M3 holes
 
-- m3 or M3   = standard M3 holes
+Mounting hole position options (default: `auto`):
+
+- `left`  = mounting holes only on left
+- `right` = mounting holes only on right
+- `both`  = both right and left mounting holes
+- `auto`  = panels 9hp and skinnier only get mounting holes on left, panels 10hp and wider get left and right mounting holes 
+- `none`  = no mounting holes
 
         Usage: generate_panel.rb [options]
         Options:
             -w, --width HP                   The width of panel in HP
-            -f, --format FORMAT              The format (default is 3U)
-                                             (See docs for posible formats)
-            -h, --holes HOLESIZE             The mounting hole size (default is M3)
-                                             (See docs for posible formats)
+            -f, --format FORMAT              The format (default: 3U)
+            -p, --position POSITION          Mounting hole postion (default: auto)
             -a, --auto-extension             Add .kicad_pcb to output filename
             -o, --output OUTPUTFILE          The file to output
                                              (If not specified, output to stdout)
-                --help                       Show this message
+            -h, --help                       Show this message
 
 
 ## `generate_panel_from_pcb.rb`
@@ -90,5 +94,25 @@ This module should be merged with the KicadPcb module eventually.
 ## `lib/sexpr_parser.rb`
 
 This is a simple s-expression parser that helps with reading KiCad's pcb files.
+
+
+## Requirements
+
+So far, this uses no external libraries, so it just need Ruby.
+
+This was developed on a computer that had Ruby 2.4.1p111, so it should run on that version or any newer version (of which there are many). It will probably also run on older Ruby versions too, but if you go older than 2.0 you're asking for trouble.
+
+I'll hopefully test it on more versions just to make sure.
+
+## How To Use
+
+1. Clone the repo or download and unzip the repo.
+2. From the command line, run `ruby <name of file> -- help` to see the options. Available programs:
+    - `ruby generate_panel.rb --help`
+    - `ruby generate_panel_from_pcb.rb --help`
+    - `ruby generate_pcb.rb --help`
+    - `ruby kicad_eurorack_panel_generator.rb --help`
+    - `ruby show_pcb_info.rb --help`
+3. Run the desired program as above, but without the `--help` option and with the appropriate options for what you want to accomplish.
 
 

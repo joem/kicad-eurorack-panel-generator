@@ -16,8 +16,12 @@ require_relative './lib/eurorack.rb'
 # Possible hole sizes:
 #   m3 or M3   = standard M3 holes
 #
-
-#TODO: Add the mounting holes!!!! (see near end of file)
+# Mounting hole position options (default is `auto`):
+#   left  = mounting holes only on left
+#   right = mounting holes only on right
+#   both  = both right and left mounting holes
+#   auto  = panels 9hp and skinnier only get mounting holes on left, panels 10hp and wider get left and right mounting holes 
+#   none  = no mounting holes
 
 # Parse all the options before doing anything else.
 # -------------------------------------------------
@@ -26,7 +30,7 @@ require_relative './lib/eurorack.rb'
 @options = {
   format: '3U',
   hole_size: 'm3',
-  hole_type: 'auto',
+  mounting_hole_position: 'auto',
   hole_shape: 'round',
 }
 
@@ -39,21 +43,22 @@ OptionParser.new do |opts|
     @options[:width_hp] = w
   end
 
-  opts.on("-f", "--format FORMAT", "The format (default is 3U)", "(See docs for posible formats)") do |f|
+  opts.on("-f", "--format FORMAT", "The format (default: 3U)") do |f|
     @options[:format] = f
   end
 
-  opts.on("-h", "--holes TYPE", "Auto, left, right, both, or none", "(Default is auto)") do |hole_type|
-    @options[:hole_type] = hole_type
+  #TODO: Maybe rename this --mounting-holes??
+  opts.on("-p", "--position POSITION", "Mounting hole postion (default: auto)") do |mounting_hole_position|
+    @options[:mounting_hole_position] = mounting_hole_position
   end
 
   #TODO: Uncomment this when you have a way to do oval holes
-  # opts.on("--hole-shape SHAPE", "Shape of the holes (default: round)", "(See docs for posible shapes)") do |hole_shape|
+  # opts.on("--hole-shape SHAPE", "Shape of the holes (default: round)") do |hole_shape|
   #   @options[:hole_shape] = hole_shape
   # end
 
   #TODO: Uncomment this when you have a way to do other sizes (namely M2.5)
-  # opts.on("--holes-size HOLESIZE", "The mounting hole size (default is M3)", "(See docs for posible sizes)") do |hole_size|
+  # opts.on("--holes-size HOLESIZE", "The mounting hole size (default is M3)") do |hole_size|
   #   @options[:hole_size] = hole_size
   # end
 
@@ -104,7 +109,7 @@ unless ['m3'].include? @options[:hole_size].downcase
   abort "Aborting. Invalid hole size specified."
 end
 
-unless ['auto', 'left', 'right', 'both', 'none'].include? @options[:hole_type].downcase
+unless ['auto', 'left', 'right', 'both', 'none'].include? @options[:mounting_hole_position].downcase
   abort "Aborting. Invalid hole type specified."
 end
 
@@ -149,7 +154,7 @@ def add_right_holes
   end
 end
 
-case @options[:hole_type]
+case @options[:mounting_hole_position]
 when 'auto'
   add_left_holes
   if @options[:width_hp].to_i >= 10
