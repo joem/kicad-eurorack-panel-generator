@@ -23,7 +23,12 @@ require_relative './lib/eurorack.rb'
 # -------------------------------------------------
 
 # Set default options here if desired
-options = {format: '3U'}
+@options = {
+  format: '3U',
+  hole_size: 'm3',
+  hole_type: 'auto',
+  hole_shape: 'round',
+}
 
 OptionParser.new do |opts|
   opts.banner = "Usage: #{File.basename($0)} [options]"
@@ -31,23 +36,33 @@ OptionParser.new do |opts|
   opts.separator "Options:"
 
   opts.on("-w", "--width HP", "The width of panel in HP") do |w|
-    options[:width] = w
+    @options[:width_hp] = w
   end
 
   opts.on("-f", "--format FORMAT", "The format (default is 3U)", "(See docs for posible formats)") do |f|
-    options[:format] = f
+    @options[:format] = f
   end
 
-  opts.on("-h", "--holes HOLESIZE", "The mounting hole size (default is M3)", "(See docs for posible formats)") do |h|
-    options[:hole_size] = h
+  opts.on("-h", "--holes TYPE", "Auto, left, right, both, or none", "(Default is auto)") do |hole_type|
+    @options[:hole_type] = hole_type
   end
+
+  #TODO: Uncomment this when you have a way to do oval holes
+  # opts.on("--hole-shape SHAPE", "Shape of the holes (default: round)", "(See docs for posible shapes)") do |hole_shape|
+  #   @options[:hole_shape] = hole_shape
+  # end
+
+  #TODO: Uncomment this when you have a way to do other sizes (namely M2.5)
+  # opts.on("--holes-size HOLESIZE", "The mounting hole size (default is M3)", "(See docs for posible sizes)") do |hole_size|
+  #   @options[:hole_size] = hole_size
+  # end
 
   opts.on("-a", "--auto-extension", "Add .kicad_pcb to output filename") do |a|
-    options[:auto_extension] = a
+    @options[:auto_extension] = a
   end
 
   opts.on("-o", "--output OUTPUTFILE", "The file to output", "(If not specified, output to stdout)") do |o|
-    options[:output_file] = o
+    @options[:output_file] = o
   end
 
   # No argument, shows at tail.  This will print an options summary.
@@ -64,41 +79,45 @@ OptionParser.new do |opts|
 
 end.parse!
 
-if (options[:output_file] && options[:auto_extension])
+if (@options[:output_file] && @options[:auto_extension])
   # quick and easy way:
-  options[:output_file] = "#{options[:output_file]}.kicad_pcb"
+  @options[:output_file] = "#{@options[:output_file]}.kicad_pcb"
   # # probably too complex for its own good way:
-  # two_parts = File.split(options[:output_file])
+  # two_parts = File.split(@options[:output_file])
   # two_parts[1] = "#{two_parts[1]}.kicad_pcb"
-  # options[:output_file] = File.join(two_parts)
+  # @options[:output_file] = File.join(two_parts)
 end
 
-if File.exists?(options[:output_file].to_s)
+if File.exists?(@options[:output_file].to_s)
   abort "Aborting. Output file already exists."
 end
 
-unless options[:width]
+unless @options[:width_hp]
   abort "Aborting. You must specify a width."
 end
 
-unless ['3u', '1ui', '1up'].include? options[:format].downcase
+unless ['3u', '1ui', '1up'].include? @options[:format].downcase
   abort "Aborting. Invalid format specified."
 end
 
-unless ['m3'].include? options[:hole_size].downcase
+unless ['m3'].include? @options[:hole_size].downcase
   abort "Aborting. Invalid hole size specified."
 end
 
-# Do things
+unless ['auto', 'left', 'right', 'both', 'none'].include? @options[:hole_type].downcase
+  abort "Aborting. Invalid hole type specified."
+end
+
+# Generate the PCB object
 # -------------------------------------------------
 
 @the_pcb = KicadPcb::Pcb.new
 
-if options[:width]
-  @the_pcb.board_width = Eurorack.panel_hp_to_mm(options[:width]).to_d.to_s('F')
+if @options[:width_hp]
+  @the_pcb.board_width = Eurorack.panel_hp_to_mm(@options[:width_hp]).to_d.to_s('F')
 end
 
-case options[:format]
+case @options[:format]
 when '3u', '3U'
   @the_pcb.board_height = Eurorack::EURORACK_3U_PANEL_MAX_HEIGHT.to_d.to_s('F')
 when '1ui', '1UI'
@@ -109,9 +128,49 @@ end
 
 #TODO: Add the mounting holes!!!!
 
-if options[:output_file]
-  puts "Writing #{options[:output_file]}"
-  File.open(options[:output_file], 'w+') do |f|
+DEFAULT_M3_HOLE_FOOTPRINT = "MountingHole:MountingHole_3.2mm_M3_DIN965"
+
+def add_left_holes
+  if @options[:width_hp].to_i == 1
+    #TODO: Put holes somewhere good for 1hp??
+  else
+    @the_pcb.add_part(DEFAULT_M3_HOLE_FOOTPRINT, "7.5".to_d, 3.to_d)
+    @the_pcb.add_part(DEFAULT_M3_HOLE_FOOTPRINT, "7.5".to_d, @the_pcb.board_height.to_d - 3.to_d)
+  end
+end
+
+def add_right_holes
+  if @options[:width_hp].to_i == 1
+    #TODO: Put holes somewhere good for 1hp??
+  else
+    right_hole_x_pos = "7.5".to_d + ((@options[:width_hp].to_i - 3).to_d * "5.08".to_d)
+    @the_pcb.add_part(DEFAULT_M3_HOLE_FOOTPRINT, right_hole_x_pos, 3.to_d)
+    @the_pcb.add_part(DEFAULT_M3_HOLE_FOOTPRINT, right_hole_x_pos, @the_pcb.board_height.to_d - 3.to_d)
+  end
+end
+
+case @options[:hole_type]
+when 'auto'
+  add_left_holes
+  if @options[:width_hp].to_i >= 10
+    add_right_holes
+  end
+when 'left'
+  add_left_holes
+when 'right'
+  add_right_holes
+when 'both'
+  add_left_holes
+  add_right_holes
+when 'none'
+end
+
+# Output the PCB
+# -------------------------------------------------
+
+if @options[:output_file]
+  puts "Writing #{@options[:output_file]}"
+  File.open(@options[:output_file], 'w+') do |f|
     f.puts @the_pcb.to_s
   end
 else
