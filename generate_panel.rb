@@ -124,31 +124,31 @@ end
 
 case @options[:format]
 when '3u', '3U'
-  @the_pcb.board_height = Eurorack::EURORACK_3U_PANEL_MAX_HEIGHT.to_d.to_s('F')
+  @the_pcb.board_height = Eurorack::MAX_PANEL_HEIGHT_3U.to_d.to_s('F')
 when '1ui', '1UI'
-  @the_pcb.board_height = Eurorack::EURORACK_1U_INTELLIJEL_PANEL_MAX_HEIGHT.to_d.to_s('F')
+  @the_pcb.board_height = Eurorack::MAX_PANEL_HEIGHT_1U_INTELLIJEL.to_d.to_s('F')
 when '1up', '1UP'
-  @the_pcb.board_height = Eurorack::EURORACK_1U_PULP_LOGIC_PANEL_MAX_HEIGHT.to_d.to_s('F')
+  @the_pcb.board_height = Eurorack::MAX_PANEL_HEIGHT_1U_PULP_LOGIC.to_d.to_s('F')
 end
-
-#TODO: Add the mounting holes!!!!
 
 DEFAULT_M3_HOLE_FOOTPRINT = "MountingHole:MountingHole_3.2mm_M3_DIN965"
 
 def add_left_holes
   if @options[:width_hp].to_i == 1
     #TODO: Put holes somewhere good for 1hp??
+    abort "Aborting. 1hp not supported yet."
   else
-    @the_pcb.add_part(DEFAULT_M3_HOLE_FOOTPRINT, "7.5".to_d, 3.to_d)
-    @the_pcb.add_part(DEFAULT_M3_HOLE_FOOTPRINT, "7.5".to_d, @the_pcb.board_height.to_d - 3.to_d)
+    @the_pcb.add_part(DEFAULT_M3_HOLE_FOOTPRINT, Eurorack::LEFT_MOUNTING_HOLE_OFFESET, 3.to_d)
+    @the_pcb.add_part(DEFAULT_M3_HOLE_FOOTPRINT, Eurorack::LEFT_MOUNTING_HOLE_OFFESET, @the_pcb.board_height.to_d - 3.to_d)
   end
 end
 
 def add_right_holes
   if @options[:width_hp].to_i == 1
     #TODO: Put holes somewhere good for 1hp??
+    abort "Aborting. 1hp not supported yet."
   else
-    right_hole_x_pos = "7.5".to_d + ((@options[:width_hp].to_i - 3).to_d * "5.08".to_d)
+    right_hole_x_pos = Eurorack::LEFT_MOUNTING_HOLE_OFFESET + ((@options[:width_hp].to_i - 3).to_d * Eurorack::HP_IN_MM)
     @the_pcb.add_part(DEFAULT_M3_HOLE_FOOTPRINT, right_hole_x_pos, 3.to_d)
     @the_pcb.add_part(DEFAULT_M3_HOLE_FOOTPRINT, right_hole_x_pos, @the_pcb.board_height.to_d - 3.to_d)
   end

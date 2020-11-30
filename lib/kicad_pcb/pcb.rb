@@ -301,6 +301,7 @@ module KicadPcb
       if @module_list.count > 0
         result = ""
         @module_list.each do |the_module|
+          result << "\n"
           result << the_module
           result << "\n"
         end
