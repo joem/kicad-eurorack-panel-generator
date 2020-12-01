@@ -104,6 +104,7 @@ This was developed on a computer that had Ruby 2.4.1p111, so it should run on th
 
 I'll hopefully test it on more versions just to make sure.
 
+
 ## How To Use
 
 1. Clone the repo or download and unzip the repo.
@@ -114,5 +115,23 @@ I'll hopefully test it on more versions just to make sure.
     - `ruby kicad_eurorack_panel_generator.rb --help`
     - `ruby show_pcb_info.rb --help`
 3. Run the desired program as above, but without the `--help` option and with the appropriate options for what you want to accomplish.
+
+
+## References
+
+Primary reference for eurorack 3U panel sizes:
+http://www.doepfer.de/a100_man/a100m_e.htm
+
+Reference for eurorack 3U pcb sizes and additional reference for eurorack 3U sizes:
+https://sdiy.info/wiki/Eurorack_DIY_parts
+
+Reference for Intellijel 1U pcb/panel sizes:
+https://intellijel.com/support/1u-technical-specifications/
+
+Reference for Pulp Logic 1U pcb/panel sizes:
+http://pulplogic.com/1u_tiles/
+
+Reference for KiCad file format: https://kicad.org/help/file-formats/ -- specifically the link to the [legacy PDF documentation](https://kicad.org/help/legacy_file_format_documentation.pdf) (but the documentation isn't great, so I mostly just made test pcb files in kicad and then made sense of the output)
+
 
 
