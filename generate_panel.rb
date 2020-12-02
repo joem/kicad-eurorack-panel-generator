@@ -31,7 +31,7 @@ require_relative './lib/eurorack.rb'
   format: '3U',
   hole_size: 'm3',
   mounting_hole_position: 'auto',
-  hole_shape: 'round',
+  mounting_hole_shape: 'round',
 }
 
 OptionParser.new do |opts|
@@ -52,10 +52,9 @@ OptionParser.new do |opts|
     @options[:mounting_hole_position] = mounting_hole_position
   end
 
-  #TODO: Uncomment this when you have a way to do oval holes
-  # opts.on("--hole-shape SHAPE", "Shape of the holes (default: round)") do |hole_shape|
-  #   @options[:hole_shape] = hole_shape
-  # end
+   opts.on("--hole-shape SHAPE", "Shape of the holes (default: round)") do |mounting_hole_shape|
+     @options[:mounting_hole_shape] = mounting_hole_shape
+   end
 
   #TODO: Uncomment this when you have a way to do other sizes (namely M2.5)
   # opts.on("--holes-size HOLESIZE", "The mounting hole size (default is M3)") do |hole_size|
@@ -129,6 +128,14 @@ end
 # Set the :mounting_hole_position to the correct strings we'll be using
 @options[:mounting_hole_position] = @options[:mounting_hole_position].downcase
 
+# Ensure valid :mounting_hole_shape input
+unless ['oval', 'round'].include? @options[:mounting_hole_shape].downcase
+  abort "Aborting. Invalid hole shape specified."
+end
+
+# Set the :mounting_hole_shape to the correct strings we'll be using
+@options[:mounting_hole_shape] = @options[:mounting_hole_shape].downcase
+
 # Generate the PCB object
 # -------------------------------------------------
 
@@ -148,8 +155,13 @@ def add_left_holes
     #TODO: Put holes somewhere good for 1hp??
     abort "Aborting. Mounting holes for 1hp not supported yet."
   else
-    @the_pcb.add_part(DEFAULT_M3_HOLE_FOOTPRINT, Eurorack::LEFT_MOUNTING_HOLE_OFFESET, 3.to_d)
-    @the_pcb.add_part(DEFAULT_M3_HOLE_FOOTPRINT, Eurorack::LEFT_MOUNTING_HOLE_OFFESET, @the_pcb.board_height.to_d - 3.to_d)
+    ref = '"Mounting Hole"'
+    shape = @options[:mounting_hole_shape]
+    left_hole_x_pos = Eurorack::LEFT_MOUNTING_HOLE_OFFESET
+    left_hole_y1_pos = 3.to_d
+    left_hole_y2_pos = @the_pcb.board_height.to_d - 3.to_d
+    @the_pcb.add_part(DEFAULT_M3_HOLE_FOOTPRINT, left_hole_x_pos, left_hole_y1_pos, ref, nil, {hole_shape: shape})
+    @the_pcb.add_part(DEFAULT_M3_HOLE_FOOTPRINT, left_hole_x_pos, left_hole_y2_pos, ref, nil, {hole_shape: shape})
   end
 end
 
@@ -158,9 +170,13 @@ def add_right_holes
     #TODO: Put holes somewhere good for 1hp??
     abort "Aborting. Mounting holes for 1hp not supported yet."
   else
+    ref = '"Mounting Hole"'
+    shape = @options[:mounting_hole_shape]
     right_hole_x_pos = Eurorack::LEFT_MOUNTING_HOLE_OFFESET + ((@options[:width_hp].to_i - 3).to_d * Eurorack::HP_IN_MM)
-    @the_pcb.add_part(DEFAULT_M3_HOLE_FOOTPRINT, right_hole_x_pos, 3.to_d)
-    @the_pcb.add_part(DEFAULT_M3_HOLE_FOOTPRINT, right_hole_x_pos, @the_pcb.board_height.to_d - 3.to_d)
+    right_hole_y1_pos = 3.to_d
+    right_hole_y2_pos = @the_pcb.board_height.to_d - 3.to_d
+    @the_pcb.add_part(DEFAULT_M3_HOLE_FOOTPRINT, right_hole_x_pos, right_hole_y1_pos, ref, nil, {hole_shape: shape})
+    @the_pcb.add_part(DEFAULT_M3_HOLE_FOOTPRINT, right_hole_x_pos, right_hole_y2_pos, ref, nil, {hole_shape: shape})
   end
 end
 
@@ -189,7 +205,7 @@ if @options[:output_file]
   puts "  Width:          #{@options[:width_hp]} HP"
   puts "  Mounting holes:"
   puts "        Position: #{@options[:mounting_hole_position]}"
-  puts "        Shape:    round" #FIXME: Make this actually come from the settings, and add that setting!
+  puts "        Shape:    #{@options[:mounting_hole_shape]}"
   print "Writing #{@options[:output_file]} ... "
   File.open(@options[:output_file], 'w+') do |f|
     f.puts @the_pcb.to_s

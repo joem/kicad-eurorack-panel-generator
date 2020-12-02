@@ -8,10 +8,29 @@ module KicadPcb
 
   class Part
 
-    attr_accessor :at_x, :at_y, :at_rotation, :tstamp, :template
+    attr_accessor :at_x, :at_y, :at_rotation, :tstamp, :template, :reference, :extra_options
 
+    # Arguments:
+    #   footprint_name
+    #     The footprint_name is used to retrieve the template from the
+    #     available templates. It should be a string.
+    #   at_x
+    #     The x position the part should be placed at.
+    #   at_y
+    #     The y position the part should be placed at.
+    #   reference = 'REF**'
+    #     The reference value that should be assigned to the part. Should be a
+    #     string. If the string has spaces, the string needs to be quoted.
+    #     Defaults to 'REF**' as KiCad does.
+    #   at_rotation
+    #     The rotation that the part should be at. Defaults to nil for no
+    #     rotation.
+    #   extra_options = {}
+    #     A hash for any part-specific options mentioned in the template.
+    #     Defaults to an empty hash.
+    #
     # def initialize(footprint_name:, at_x:, at_y:, at_rotation: nil)
-    def initialize(footprint_name, at_x, at_y, at_rotation = nil)
+    def initialize(footprint_name, at_x, at_y, reference = 'REF**', at_rotation = nil, extra_options = {})
       @footprint_name = footprint_name
       @template = ERB.new(TEMPLATES[footprint_name])
       @at_x = at_x.to_d.to_s('F')
@@ -21,7 +40,9 @@ module KicadPcb
       else
         @at_rotation = at_rotation
       end
+      @reference = reference
       @tstamp = KicadPcb.current_tstamp
+      @extra_options = extra_options
     end
 
     def output

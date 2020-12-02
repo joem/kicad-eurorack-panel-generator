@@ -287,13 +287,13 @@ module KicadPcb
       EOF_EDGE_CUTS
     end
 
-    def add_module(footprint_name, relative_x_pos, relative_y_pos, rotation = nil)
-      @board_origin_x.to_d
-      @board_origin_y.to_d
+    def add_module(footprint_name, relative_x_pos, relative_y_pos, reference = 'REF**', rotation = nil, extra_options = {})
+      # @board_origin_x.to_d
+      # @board_origin_y.to_d
       @setting_modules += 1
       absolute_x_pos = @board_origin_x.to_d + relative_x_pos.to_d
       absolute_y_pos = @board_origin_y.to_d + relative_y_pos.to_d
-      @module_list << KicadPcb::Part.new(footprint_name, absolute_x_pos, absolute_y_pos, rotation).to_s
+      @module_list << KicadPcb::Part.new(footprint_name, absolute_x_pos, absolute_y_pos, reference, rotation, extra_options).to_s
     end
     alias_method :add_part, :add_module
 
