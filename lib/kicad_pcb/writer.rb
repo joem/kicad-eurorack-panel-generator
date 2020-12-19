@@ -132,14 +132,12 @@ class KicadPcb
         multi_line_list_output << "#{keyword}\n"
         # write each item in data with indent
         data.each do |key, value|
-          if value.is_a?(Array)
-            raise "Array not currently supported as a value in data in method #{__callee__}"
-          elsif value.is_a?(Hash)
+          if value.is_a?(Hash)
             # If value is a hash, do a nested multi-line list
             multi_line_list_output << indent(multi_line_list(key, value), 2)
             multi_line_list_output << "\n"
           else
-            # assume string or string-like
+            # assume string or string-like (or array to be flattened)
             multi_line_list_output << indent(single_line_list(key, value), 2)
             multi_line_list_output << "\n"
           end

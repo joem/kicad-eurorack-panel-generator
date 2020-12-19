@@ -103,7 +103,7 @@ class KicadPcb
 
     @page_section = 'A4' # The docs consider this a part of the General Section, even though it's a separate item!
 
-    # We might not want to do this one right away, in case their overridden or duplicated or something in a user pcb file?
+    # We might not want to do this one right away, in case they're overridden or duplicated or something in a user pcb file?
     @layers_section = {
       '0' => 'F.Cu signal',
       '31' => 'B.Cu signal',
@@ -145,15 +145,15 @@ class KicadPcb
       'edge_width' => '0.05'.to_d,
       'segment_width' => '0.2'.to_d,
       'pcb_text_width' => '0.3'.to_d,
-      'pcb_text_size' => '1.5 1.5', #TODO: What to do about ones like this with two values??
+      'pcb_text_size' => ['1.5'.to_d, '1.5'.to_d],
       'mod_edge_width' => '0.12'.to_d,
       'mod_text_size' => '1 1'.to_d,
       'mod_text_width' => '0.15'.to_d,
-      'pad_size' => '1.524 1.524', #TODO: What to do about ones like this with two values??
+      'pad_size' => ['1.524'.to_d, '1.524'.to_d],
       'pad_drill' => '0.762'.to_d,
       'pad_to_mask_clearance' => '0.051'.to_d,
       'solder_mask_min_width' => '0.25'.to_d,
-      'aux_axis_origin' => '0 0', #TODO: What to do about ones like this with two values??
+      'aux_axis_origin' => ['0'.to_d, '0'.to_d],
       'visible_elements' => 'FFFFFF7F',
       'pcbplotparams' => {
         'layerselection' => '0x010fc_ffffffff',
