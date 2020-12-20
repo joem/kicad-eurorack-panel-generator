@@ -55,6 +55,9 @@ class KicadPcb
     end
 
 
+    private
+
+
     def write_open_list
       '('
     end
@@ -136,10 +139,6 @@ class KicadPcb
     def write_close_list
       ')'
     end
-
-
-
-    private
 
     def multi_line_list(keyword, data)
       if data.is_a?(Array)
