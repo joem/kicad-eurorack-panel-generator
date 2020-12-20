@@ -74,15 +74,22 @@ class KicadPcb
       list_of_nets_output = ''
       list_of_nets = @kicad_pcb_object.list_of_nets
       list_of_nets.keys.sort.each do |key|
-        list_of_nets_output << "#{single_line_list('net', [key, list_of_nets[key]])}\n"
+        list_of_nets_output << single_line_list('net', [key, list_of_nets[key]], true)
       end
       return list_of_nets_output
     end
 
     def write_list_of_net_classes
-      # put keyword, name, and description on top line
-      # then put options one per line, indented
-      '' #DEBUG #FIXME: Implement this stuff!
+      list_of_net_classes_output = ''
+      @kicad_pcb_object.list_of_net_classes.each do |net_class|
+        list_of_net_classes_output << write_open_list
+        list_of_net_classes_output << "net_class #{net_class['name']} #{net_class['description']}\n"
+        net_class['options'].each do |key, value|
+          list_of_net_classes_output << single_line_list(key, format(value), true, 2)
+        end
+        list_of_net_classes_output << write_close_list
+      end
+      return list_of_net_classes_output
     end
 
     def write_list_of_modules
@@ -138,8 +145,9 @@ class KicadPcb
             multi_line_list_output << "\n"
           else
             # assume string or string-like (or array to be flattened)
-            multi_line_list_output << indent(single_line_list(key, value), 2)
-            multi_line_list_output << "\n"
+            # multi_line_list_output << indent(single_line_list(key, value), 2)
+            # multi_line_list_output << "\n"
+            multi_line_list_output << single_line_list(key, format(value), true, 2)
           end
         end
         # close list
@@ -150,17 +158,25 @@ class KicadPcb
       end
     end
 
-    def single_line_list(keyword, data)
+    #TODO: Rework this to have keyword arguments so that calling it makes more sense!
+    def single_line_list(keyword, data, newline=false, indent_amount=0)
+      if newline
+        optional_newline = "\n"
+      else
+        optional_newline = ""
+      end
       if data.is_a?(Array)
         # If data is an array, the array is joined by spaces and put after keyword.
-        "(#{keyword} #{data.map{|value| format(value)}.join(' ')})"
+        # "(#{keyword} #{data.map{|value| format(value)}.join(' ')})#{optional_newline}"
+        "#{indent("(#{keyword} #{data.map{|value| format(value)}.join(' ')})", indent_amount)}#{optional_newline}"
       elsif data.is_a?(Hash)
         # If data is a hash, each hash element will be turned into "(key value)" and put after the keyword.
         #TODO: Make this flatten the hash in a good way and output on one line
         raise "Hash not currently supported as data in method #{__callee__}"
       else
         # assume string or string-like
-        "(#{keyword} #{format(data)})"
+        # "(#{keyword} #{format(data)})#{optional_newline}"
+        "#{indent("(#{keyword} #{format(data)})", indent_amount)}#{optional_newline}"
       end
     end
 

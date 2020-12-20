@@ -147,7 +147,7 @@ class KicadPcb
       'pcb_text_width' => '0.3'.to_d,
       'pcb_text_size' => ['1.5'.to_d, '1.5'.to_d],
       'mod_edge_width' => '0.12'.to_d,
-      'mod_text_size' => '1 1'.to_d,
+      'mod_text_size' => ['1'.to_d, '1'.to_d],
       'mod_text_width' => '0.15'.to_d,
       'pad_size' => ['1.524'.to_d, '1.524'.to_d],
       'pad_drill' => '0.762'.to_d,
@@ -190,7 +190,7 @@ class KicadPcb
     }
 
     #TODO: Writer (and parser) will have to be able to deal with the options list correctly
-    @lise_of_net_classes = [
+    @list_of_net_classes = [
       { 'name' => 'Default',
         'description' => '"This is the default net class."',
         'options' => {
