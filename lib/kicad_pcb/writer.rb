@@ -1,6 +1,15 @@
 class KicadPcb
   class Writer
 
+    # Keywords:
+    # Use only lowercase ASCII words (and trailing digits if needed). ASCII characters are <= 127.
+
+    # Identifiers and Strings:
+    # Identifiers are variables used within the file such as layer names, net names, etc.
+    # Strings are longer text sequences such as drawing labels.
+    # They are handled the same, and will be referred to as strings henceforth.
+    #
+
 
     def initialize(kicad_pcb_object)
       @kicad_pcb_object = kicad_pcb_object
@@ -83,7 +92,7 @@ class KicadPcb
       list_of_net_classes_output = ''
       @kicad_pcb_object.list_of_net_classes.each do |net_class|
         list_of_net_classes_output << write_open_list
-        list_of_net_classes_output << "net_class #{net_class['name']} #{net_class['description']}\n"
+        list_of_net_classes_output << "net_class #{format(net_class['name'])} #{format(net_class['description'])}\n"
         net_class['options'].each do |key, value|
           list_of_net_classes_output << single_line_list(key, format(value), true, 2)
         end
@@ -130,6 +139,8 @@ class KicadPcb
 
 
 
+    private
+
     def multi_line_list(keyword, data)
       if data.is_a?(Array)
         raise "Array not currently supported as data in method #{__callee__}"
@@ -167,7 +178,6 @@ class KicadPcb
       end
       if data.is_a?(Array)
         # If data is an array, the array is joined by spaces and put after keyword.
-        # "(#{keyword} #{data.map{|value| format(value)}.join(' ')})#{optional_newline}"
         "#{indent("(#{keyword} #{data.map{|value| format(value)}.join(' ')})", indent_amount)}#{optional_newline}"
       elsif data.is_a?(Hash)
         # If data is a hash, each hash element will be turned into "(key value)" and put after the keyword.
@@ -175,13 +185,9 @@ class KicadPcb
         raise "Hash not currently supported as data in method #{__callee__}"
       else
         # assume string or string-like
-        # "(#{keyword} #{format(data)})#{optional_newline}"
         "#{indent("(#{keyword} #{format(data)})", indent_amount)}#{optional_newline}"
       end
     end
-
-
-    private
 
     # The meat of this method was taken from _indent method in this library:
     # https://github.com/samueldana/indentation
@@ -193,13 +199,7 @@ class KicadPcb
       str.to_s.split("\n", -1).collect{|line| (i_char * num) + line}.join("\n")
     end
 
-
     def format(value)
-      # if a number, make it a nice string
-      # if a string with spaces, quote it
-      # otherwise just return the input
-      # raise 'Implement format()!!!!!!'
-      # value #DEBUG #FIXME
       if value.is_a?(BigDecimal)
         value.to_s("F")
       elsif value.is_a?(Float)
@@ -208,17 +208,31 @@ class KicadPcb
         value.to_s
       elsif value.is_a?(String)
         if value == ''
-          #TODO: Check to see if it's an empty string and then return an empty pair of quoted quotes
           '""'
-        #elsif value.contains_bad_stuffffff
-        #  #TODO: Check to see if it has anything that needs to be quoted and if so, quote it
+        elsif check_for_characters_that_need_quoting(value)
+          "\"#{value}\""
+        elsif check_for_dash_anywhere_but_first(value)
+          "\"#{value}\""
         else
-          value #DEBUG #FIXME
+          value
         end
       else
-        value # leave it to chance!
+        value # Not sure what else it might be, but I guess just use value?? Maybe it should raise an error?
       end
     end
+
+    def check_for_characters_that_need_quoting(the_string)
+      characters_that_need_quoting = [' ', "\t", '(', ')', '%', '{', '}']
+      characters_that_need_quoting.any? { |s| the_string.include? s }
+    end
+
+    def check_for_dash_anywhere_but_first(the_string)
+      # remove first character
+      the_string = the_string[1..-1]
+      # check for dashes
+      the_string.include? '-'
+    end
+
 
   end
 end

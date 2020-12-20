@@ -105,26 +105,26 @@ class KicadPcb
 
     # We might not want to do this one right away, in case they're overridden or duplicated or something in a user pcb file?
     @layers_section = {
-      '0' => 'F.Cu signal',
-      '31' => 'B.Cu signal',
-      '32' => 'B.Adhes user',
-      '33' => 'F.Adhes user',
-      '34' => 'B.Paste user',
-      '35' => 'F.Paste user',
-      '36' => 'B.SilkS user',
-      '37' => 'F.SilkS user',
-      '38' => 'B.Mask user',
-      '39' => 'F.Mask user',
-      '40' => 'Dwgs.User user',
-      '41' => 'Cmts.User user',
-      '42' => 'Eco1.User user',
-      '43' => 'Eco2.User user',
-      '44' => 'Edge.Cuts user',
-      '45' => 'Margin user',
-      '46' => 'B.CrtYd user',
-      '47' => 'F.CrtYd user',
-      '48' => 'B.Fab user',
-      '49' => 'F.Fab user'
+      '0' => ['F.Cu', 'signal'],
+      '31' => ['B.Cu', 'signal'],
+      '32' => ['B.Adhes', 'user'],
+      '33' => ['F.Adhes', 'user'],
+      '34' => ['B.Paste', 'user'],
+      '35' => ['F.Paste', 'user'],
+      '36' => ['B.SilkS', 'user'],
+      '37' => ['F.SilkS', 'user'],
+      '38' => ['B.Mask', 'user'],
+      '39' => ['F.Mask', 'user'],
+      '40' => ['Dwgs.User', 'user'],
+      '41' => ['Cmts.User', 'user'],
+      '42' => ['Eco1.User', 'user'],
+      '43' => ['Eco2.User', 'user'],
+      '44' => ['Edge.Cuts', 'user'],
+      '45' => ['Margin', 'user'],
+      '46' => ['B.CrtYd', 'user'],
+      '47' => ['F.CrtYd', 'user'],
+      '48' => ['B.Fab', 'user'],
+      '49' => ['F.Fab', 'user']
     }
 
     @setup_section = {
@@ -165,9 +165,9 @@ class KicadPcb
         'linewidth' => '0.150000'.to_d,
         'plotframeref' => false,
         'viasonmask' => false,
-        'mode' => '1', #TODO: What to do about this? Int or BigDec?
+        'mode' => 1,
         'useauxorigin' => false,
-        'hpglpennumber' => '1', #TODO: What to do about this? Int or BigDec?
+        'hpglpennumber' => 1,
         'hpglpenspeed' => '20', #TODO: What to do about this? Int or BigDec?
         'hpglpendiameter' => '15.000000'.to_d,
         'psnegative' => false,
@@ -177,9 +177,9 @@ class KicadPcb
         'plotinvisibletext' => false,
         'padsonsilk' => false,
         'subtractmaskfromsilk' => false,
-        'outputformat' => '1', #TODO: What to do about this? Int or BigDec?
+        'outputformat' => 1,
         'mirror' => false,
-        'drillshape' => '1', #TODO: What to do about this? Int or BigDec?
+        'drillshape' => 1,
         'scaleselection' => '1', #TODO: What to do about this? Int or BigDec?
         'outputdirectory' => ''
       }
@@ -192,7 +192,7 @@ class KicadPcb
     #TODO: Writer (and parser) will have to be able to deal with the options list correctly
     @list_of_net_classes = [
       { 'name' => 'Default',
-        'description' => '"This is the default net class."',
+        'description' => 'This is the default net class.',
         'options' => {
           'clearance' => '0.2'.to_d,
           'trace_width' => '0.25'.to_d,
