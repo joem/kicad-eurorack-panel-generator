@@ -11,10 +11,10 @@ require_relative 'kicad_pcb/writer'
 class KicadPcb
 
   attr_accessor :header_line
-  attr_accessor :general_section
-  attr_accessor :page_section
-  attr_accessor :layers_section
-  attr_accessor :setup_section
+  attr_accessor :general_settings
+  attr_accessor :page_settings
+  attr_accessor :layers_settings
+  attr_accessor :setup_settings
   attr_accessor :list_of_nets
   attr_accessor :list_of_net_classes
   attr_accessor :list_of_modules
@@ -92,7 +92,7 @@ class KicadPcb
     #TODO: Find out if I can or should change the host to mention my ruby program?
     @header_line = 'kicad_pcb (version 20171130) (host pcbnew "(5.1.2-1)-1")'
 
-    @general_section = {
+    @general_settings = {
       'thickness' => '1.6'.to_d,
       'drawings' => 0,
       'tracks' => 0,
@@ -101,10 +101,10 @@ class KicadPcb
       'nets' => 1
     }
 
-    @page_section = 'A4' # The docs consider this a part of the General Section, even though it's a separate item!
+    @page_settings = 'A4' # The docs consider this a part of the General Section, even though it's a separate item!
 
     # We might not want to do this one right away, in case they're overridden or duplicated or something in a user pcb file?
-    @layers_section = {
+    @layers_settings = {
       '0' => ['F.Cu', 'signal'],
       '31' => ['B.Cu', 'signal'],
       '32' => ['B.Adhes', 'user'],
@@ -127,7 +127,7 @@ class KicadPcb
       '49' => ['F.Fab', 'user']
     }
 
-    @setup_section = {
+    @setup_settings = {
       'last_trace_width' => '0.25'.to_d,
       'trace_clearance' => '0.2'.to_d,
       'zone_clearance' => '0.508'.to_d,

@@ -1,15 +1,7 @@
 class KicadPcb
   class Writer
 
-    # Keywords:
-    # Use only lowercase ASCII words (and trailing digits if needed). ASCII characters are <= 127.
-
-    # Identifiers and Strings:
-    # Identifiers are variables used within the file such as layer names, net names, etc.
-    # Strings are longer text sequences such as drawing labels.
-    # They are handled the same, and will be referred to as strings henceforth.
-    #
-
+    # Refer to section 4 in this document to see the file spec: https://kicad.org/help/legacy_file_format_documentation.pdf
 
     def initialize(kicad_pcb_object)
       @kicad_pcb_object = kicad_pcb_object
@@ -23,13 +15,13 @@ class KicadPcb
       the_output << "\n"
 
       the_middle = ""
-      the_middle << write_general_section
+      the_middle << write_general_settings
       the_middle << "\n\n"
-      the_middle << write_page_section
+      the_middle << write_page_settings
       the_middle << "\n\n"
-      the_middle << write_layers_section
+      the_middle << write_layers_settings
       the_middle << "\n\n"
-      the_middle << write_setup_section
+      the_middle << write_setup_settings
       the_middle << "\n\n"
       the_middle << write_list_of_nets
       the_middle << "\n\n"
@@ -66,20 +58,20 @@ class KicadPcb
       @kicad_pcb_object.header_line
     end
 
-    def write_general_section
-      multi_line_list('general', @kicad_pcb_object.general_section)
+    def write_general_settings
+      multi_line_list('general', @kicad_pcb_object.general_settings)
     end
 
-    def write_page_section
-      single_line_list('page', @kicad_pcb_object.page_section)
+    def write_page_settings
+      single_line_list('page', @kicad_pcb_object.page_settings)
     end
 
-    def write_layers_section
-      multi_line_list('layers', @kicad_pcb_object.layers_section)
+    def write_layers_settings
+      multi_line_list('layers', @kicad_pcb_object.layers_settings)
     end
 
-    def write_setup_section
-      multi_line_list('setup', @kicad_pcb_object.setup_section)
+    def write_setup_settings
+      multi_line_list('setup', @kicad_pcb_object.setup_settings)
     end
 
     def write_list_of_nets
