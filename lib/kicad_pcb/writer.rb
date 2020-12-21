@@ -11,29 +11,29 @@ class KicadPcb
       the_output = ""
 
       the_output << write_open_list # initial open parentheses
-      the_output << write_header_line
+      the_output << write_header
       the_output << "\n"
 
       the_middle = ""
-      the_middle << write_general_settings
+      the_middle << write_general
       the_middle << "\n\n"
-      the_middle << write_page_settings
+      the_middle << write_page
       the_middle << "\n\n"
-      the_middle << write_layers_settings
+      the_middle << write_layers
       the_middle << "\n\n"
-      the_middle << write_setup_settings
+      the_middle << write_setup
       the_middle << "\n\n"
-      the_middle << write_list_of_nets
+      the_middle << write_nets
       the_middle << "\n\n"
-      the_middle << write_list_of_net_classes
-      the_middle << "\n\n"
-      the_middle << write_list_of_modules
-      the_middle << "\n\n"
-      the_middle << write_list_of_graphic_items
-      the_middle << "\n\n"
-      the_middle << write_list_of_tracks
-      the_middle << "\n\n"
-      the_middle << write_list_of_zones
+      the_middle << write_net_classes
+      the_middle << "\n"
+      the_middle << write_modules
+      the_middle << "\n"
+      the_middle << write_graphic_items
+      the_middle << "\n"
+      the_middle << write_tracks
+      the_middle << "\n"
+      the_middle << write_zones
 
       the_output << indent(the_middle, 2)
       the_output << "\n"
@@ -54,102 +54,125 @@ class KicadPcb
       '('
     end
 
-    def write_header_line
-      @kicad_pcb_object.header_line
+    def write_header
+      @kicad_pcb_object.header
     end
 
-    def write_general_settings
-      multi_line_list('general', @kicad_pcb_object.general_settings)
+    def write_general
+      multi_line_list(keyword: 'general', data: @kicad_pcb_object.general)
     end
 
-    def write_page_settings
-      single_line_list('page', @kicad_pcb_object.page_settings)
+    def write_page
+      single_line_list(keyword: 'page', data: @kicad_pcb_object.page)
     end
 
-    def write_layers_settings
-      multi_line_list('layers', @kicad_pcb_object.layers_settings)
+    def write_layers
+      multi_line_list(keyword: 'layers', data: @kicad_pcb_object.layers)
     end
 
-    def write_setup_settings
-      multi_line_list('setup', @kicad_pcb_object.setup_settings)
+    def write_setup
+      multi_line_list(keyword: 'setup', data: @kicad_pcb_object.setup)
     end
 
-    def write_list_of_nets
-      list_of_nets_output = ''
-      list_of_nets = @kicad_pcb_object.list_of_nets
-      list_of_nets.keys.sort.each do |key|
-        list_of_nets_output << single_line_list('net', [key, list_of_nets[key]], true)
+    def write_nets
+      nets_output = ''
+      # nets = @kicad_pcb_object.nets
+      # nets.keys.sort.each do |key|
+      #   nets_output << single_line_list(keyword: 'net', data: [key, nets[key]], newline: true)
+      # end
+      nets = @kicad_pcb_object.nets
+      nets.each_with_index do |net_name, index|
+        # nets_output << single_line_list(keyword: 'net', data: [index, format(net_name)], newline: true)
+        nets_output << single_line_list(keyword: 'net', data: [index, net_name], newline: true)
       end
-      return list_of_nets_output
+      return nets_output
     end
 
-    def write_list_of_net_classes
-      list_of_net_classes_output = ''
-      @kicad_pcb_object.list_of_net_classes.each do |net_class|
-        list_of_net_classes_output << write_open_list
-        list_of_net_classes_output << "net_class #{format(net_class['name'])} #{format(net_class['description'])}\n"
-        net_class['options'].each do |key, value|
-          list_of_net_classes_output << single_line_list(key, format(value), true, 2)
+    def write_net_classes
+      net_classes_output = ''
+      @kicad_pcb_object.net_classes.each do |name, net_class|
+        the_net_class = Marshal.load(Marshal.dump(net_class)) # do a deep copy so we can modify it later without touching original
+        nets = the_net_class.nets
+        net_classes_output << write_open_list
+        net_classes_output << "net_class #{format(name)} #{format(the_net_class.description)}\n"
+        # remove name and description fron the_net_class
+        # the_net_class.delete_field(:name)
+        the_net_class.delete_field(:description)
+        the_net_class.delete_field(:nets)
+        # iterate over what's left
+        the_net_class.to_h.each do |key, value|
+          net_classes_output << single_line_list(keyword: key, data: format(value), newline: true, indent_amount: 2)
         end
-        list_of_net_classes_output << write_close_list
+        nets.each do |net_name|
+          net_classes_output << single_line_list(keyword: 'add_net', data: format(net_name), newline: true, indent_amount: 2)
+        end
+        net_classes_output << write_close_list
+        net_classes_output << "\n"
       end
-      return list_of_net_classes_output
+      return net_classes_output
     end
 
-    def write_list_of_modules
-      list_of_modules_output = ''
-      unless @kicad_pcb_object.list_of_modules.empty?
+    def write_modules
+      modules_output = ''
+      # modules_output << "(<module>)\n" #DEBUG
+      unless @kicad_pcb_object.modules.empty?
         #TODO: Implement me!!!
       end
-      return list_of_modules_output
+      return modules_output
     end
 
-    def write_list_of_graphic_items
-      list_of_graphic_items_output = ''
-      unless @kicad_pcb_object.list_of_graphic_items.empty?
+    def write_graphic_items
+      graphic_items_output = ''
+      # graphic_items_output << "(<graphic item>)\n" #DEBUG
+      unless @kicad_pcb_object.graphic_items.empty?
         #TODO: Implement me!!!
       end
-      return list_of_graphic_items_output
+      return graphic_items_output
     end
 
-    def write_list_of_tracks
-      list_of_tracks_output = ''
-      unless @kicad_pcb_object.list_of_tracks.empty?
+    def write_tracks
+      tracks_output = ''
+      # tracks_output << "(<track>)\n" #DEBUG
+      unless @kicad_pcb_object.tracks.empty?
         #TODO: Implement me!!!
       end
-      return list_of_tracks_output
+      return tracks_output
     end
 
-    def write_list_of_zones
-      list_of_zones_output = ''
-      unless @kicad_pcb_object.list_of_zones.empty?
+    def write_zones
+      zones_output = ''
+      # zones_output << "(<zone>)\n" #DEBUG
+      unless @kicad_pcb_object.zones.empty?
         #TODO: Implement me!!!
       end
-      return list_of_zones_output
+      return zones_output
     end
 
     def write_close_list
       ')'
     end
 
-    def multi_line_list(keyword, data)
+    def multi_line_list(keyword:, data:)
       if data.is_a?(Array)
         raise "Array not currently supported as data in method #{__callee__}"
+      elsif data.is_a?(OpenStruct)
+        return multi_line_list(keyword: keyword, data: data.to_h)
       elsif data.is_a?(Hash)
         multi_line_list_output = ''
         multi_line_list_output << write_open_list
         multi_line_list_output << "#{keyword}\n"
         # write each item in data with indent
         data.each do |key, value|
-          if value.is_a?(Hash)
-            # If value is a hash, do a nested multi-line list
-            multi_line_list_output << indent(multi_line_list(key, value), 2)
+          # if value.is_a?(Hash)
+          if [Hash, OpenStruct].any? { |c| value.is_a? c }
+            # If value is a hash or openstruct, do a nested multi-line list
+            # (treating openstruct exactly the same in this case because the first openstruct check
+            # in this method converts it to hash)
+            multi_line_list_output << indent(multi_line_list(keyword: key, data: value), 2)
             multi_line_list_output << "\n"
           else
             # assume string or string-like (or array to be flattened)
-            # multi_line_list_output << indent(single_line_list(key, value), 2)
-            # multi_line_list_output << "\n"
-            multi_line_list_output << single_line_list(key, format(value), true, 2)
+            multi_line_list_output << single_line_list(keyword: key, data: format(value), newline: true, indent_amount: 2)
           end
         end
         # close list
@@ -160,8 +183,9 @@ class KicadPcb
       end
     end
 
-    #TODO: Rework this to have keyword arguments so that calling it makes more sense!
-    def single_line_list(keyword, data, newline=false, indent_amount=0)
+    # Note: This method formats the data for you, so you don't need to format it beforehand.
+    # (That said, double-formatting it won't break anything.)
+    def single_line_list(keyword:, data:, newline: false, indent_amount: 0)
       if newline
         optional_newline = "\n"
       else
@@ -190,6 +214,10 @@ class KicadPcb
       str.to_s.split("\n", -1).collect{|line| (i_char * num) + line}.join("\n")
     end
 
+    # Formats values according to type, according to kicad_pcb file specs.
+    #
+    # It will not double-format a string, so don't worry about over-formatting.
+    #
     def format(value)
       if value.is_a?(BigDecimal)
         value.to_s("F")
@@ -200,6 +228,8 @@ class KicadPcb
       elsif value.is_a?(String)
         if value == ''
           '""'
+        elsif check_if_already_quoted(value)
+          value
         elsif check_for_characters_that_need_quoting(value)
           "\"#{value}\""
         elsif check_for_dash_anywhere_but_first(value)
@@ -224,6 +254,22 @@ class KicadPcb
       the_string.include? '-'
     end
 
+    # See if it starts and ends with quotes already
+    # If it does, see if there are any other quotes
+    #   If so, raise error
+    #   If not, return true
+    # If it doesn't, return false
+    def check_if_already_quoted(the_string)
+      if ((the_string[0] == '"') && (the_string[-1] == '"'))
+        if the_string[1..-2].include?('"')
+          raise "String passed to #{__callee__} has too many quotes"
+        else
+          true
+        end
+      else
+        false
+      end
+    end
 
   end
 end

@@ -1,5 +1,6 @@
 require 'bigdecimal'
 require 'bigdecimal/util'
+require 'ostruct'
 require 'time'
 require_relative 'kicad_pcb/parser'
 require_relative 'kicad_pcb/writer'
@@ -10,17 +11,17 @@ require_relative 'kicad_pcb/writer'
 
 class KicadPcb
 
-  attr_accessor :header_line
-  attr_accessor :general_settings
-  attr_accessor :page_settings
-  attr_accessor :layers_settings
-  attr_accessor :setup_settings
-  attr_accessor :list_of_nets
-  attr_accessor :list_of_net_classes
-  attr_accessor :list_of_modules
-  attr_accessor :list_of_graphic_items
-  attr_accessor :list_of_tracks
-  attr_accessor :list_of_zones
+  attr_accessor :header
+  attr_accessor :general
+  attr_accessor :page
+  attr_accessor :layers
+  attr_accessor :setup
+  attr_accessor :nets
+  attr_accessor :net_classes
+  attr_accessor :modules
+  attr_accessor :graphic_items
+  attr_accessor :tracks
+  attr_accessor :zones
 
   # top level things:
   #
@@ -37,7 +38,6 @@ class KicadPcb
   #
   #
 
-
   # Return a new KicadPcb object once it parses
   def self.parse()
     #TODO: Make this work!
@@ -47,64 +47,60 @@ class KicadPcb
 
   #FIXME: These are the old module methods.... need to put them somewhere else for the most part!
 
-  # The meat of this method was taken from _indent method in this library:
-  # https://github.com/samueldana/indentation
-  # That library is copyright © 2010 Prometheus Computing
-  # and uses the MIT License.
-  # I'm no legal expert, but hopefully this meets the MIT license reqs.?
-  # (If not, let me know and I'll update accordingly!)
-  def self.indent(str, num = nil, i_char = ' ')
-    str.to_s.split("\n", -1).collect{|line| (i_char * num) + line}.join("\n")
-  end
+  # # The meat of this method was taken from _indent method in this library:
+  # # https://github.com/samueldana/indentation
+  # # That library is copyright © 2010 Prometheus Computing
+  # # and uses the MIT License.
+  # # I'm no legal expert, but hopefully this meets the MIT license reqs.?
+  # # (If not, let me know and I'll update accordingly!)
+  # def self.indent(str, num = nil, i_char = ' ')
+  #   str.to_s.split("\n", -1).collect{|line| (i_char * num) + line}.join("\n")
+  # end
 
-  # Convert from a kicad tstamp to a ruby time object
-  # (kicad tstamp is seconds since unix epoch in hexadecimal)
-  def self.tstamp_to_time(tstamp)
-    Time.at(tstamp.to_i(16))
-  end
+  # # Convert from a kicad tstamp to a ruby time object
+  # # (kicad tstamp is seconds since unix epoch in hexadecimal)
+  # def self.tstamp_to_time(tstamp)
+  #   Time.at(tstamp.to_i(16))
+  # end
 
-  # Convert from a ruby time object to a kicad tstamp string
-  # (kicad tstamp is seconds since unix epoch in hexadecimal)
-  def self.current_tstamp
-    Time.now.to_i.to_s(16).upcase
-  end
+  # # Convert from a ruby time object to a kicad tstamp string
+  # # (kicad tstamp is seconds since unix epoch in hexadecimal)
+  # def self.current_tstamp
+  #   Time.now.to_i.to_s(16).upcase
+  # end
 
-  # Convert a number to a string that shows no more than so many decimal places (default: 4)
-  # Works well for BigDecimals as well as normal Numerics.
-  def self.num_to_s(num, places = 4)
-    # Follows this structure: (bigdecimal.to_s("F") + "0000")[/.*\..{4}/]
-    num.to_d.truncate(places).to_s("F")
-  end
+  # # Convert a number to a string that shows no more than so many decimal places (default: 4)
+  # # Works well for BigDecimals as well as normal Numerics.
+  # def self.num_to_s(num, places = 4)
+  #   # Follows this structure: (bigdecimal.to_s("F") + "0000")[/.*\..{4}/]
+  #   num.to_d.truncate(places).to_s("F")
+  # end
 
-  # Convert a number to a string that shows exactly so many decimal places (default: 4)
-  # Works well for BigDecimals as well as normal Numerics.
-  def self.num_to_s_fixed_places(num, places = 4)
-    # Follows this structure: (bigdecimal.to_s("F") + "0000")[/.*\..{4}/]
-    (num.to_d.to_s("F") + ("0" * places))[/.*\..{#{places}}/]
-  end
+  # # Convert a number to a string that shows exactly so many decimal places (default: 4)
+  # # Works well for BigDecimals as well as normal Numerics.
+  # def self.num_to_s_fixed_places(num, places = 4)
+  #   # Follows this structure: (bigdecimal.to_s("F") + "0000")[/.*\..{4}/]
+  #   (num.to_d.to_s("F") + ("0" * places))[/.*\..{#{places}}/]
+  # end
 
 
 
 
   #TODO: What are some options that might need to be set upon doing KicadPcb.new?? Add them to the initializer arguments but with defaults.
   def initialize()
-
     #TODO: Find out if I can or should change the host to mention my ruby program?
-    @header_line = 'kicad_pcb (version 20171130) (host pcbnew "(5.1.2-1)-1")'
-
-    @general_settings = {
-      'thickness' => '1.6'.to_d,
-      'drawings' => 0,
-      'tracks' => 0,
-      'zones' => 0,
-      'modules' => 0,
-      'nets' => 1
-    }
-
-    @page_settings = 'A4' # The docs consider this a part of the General Section, even though it's a separate item!
-
+    @header = 'kicad_pcb (version 20171130) (host pcbnew "(5.1.2-1)-1")'
+    @general = OpenStruct.new(
+      thickness: '1.6'.to_d,
+      drawings: 0,
+      tracks: 0, #TODO: Make this be a function that counts them in @tracks instead of a value that needs changing!
+      zones: 0, #TODO: Make this be a function that counts them in @zones instead of a value that needs changing!
+      modules: 0, #TODO: Make this be a function that counts them in @modules instead of a value that needs changing!
+      nets: 0 #TODO: Make this be a function that counts them in @nets instead of a value that needs changing!
+    )
+    @page = 'A4' # The docs consider this a part of the General Section, even though it's a separate item!
     # We might not want to do this one right away, in case they're overridden or duplicated or something in a user pcb file?
-    @layers_settings = {
+    @layers = OpenStruct.new(
       '0' => ['F.Cu', 'signal'],
       '31' => ['B.Cu', 'signal'],
       '32' => ['B.Adhes', 'user'],
@@ -125,97 +121,129 @@ class KicadPcb
       '47' => ['F.CrtYd', 'user'],
       '48' => ['B.Fab', 'user'],
       '49' => ['F.Fab', 'user']
-    }
-
-    @setup_settings = {
-      'last_trace_width' => '0.25'.to_d,
-      'trace_clearance' => '0.2'.to_d,
-      'zone_clearance' => '0.508'.to_d,
-      'zone_45_only' => 'no',
-      'trace_min' => '0.2'.to_d,
-      'via_size' => '0.8'.to_d,
-      'via_drill' => '0.4'.to_d,
-      'via_min_size' => '0.4'.to_d,
-      'via_min_drill' => '0.3'.to_d,
-      'uvia_size' => '0.3'.to_d,
-      'uvia_drill' => '0.1'.to_d,
-      'uvias_allowed' => 'no',
-      'uvia_min_size' => '0.2'.to_d,
-      'uvia_min_drill' => '0.1'.to_d,
-      'edge_width' => '0.05'.to_d,
-      'segment_width' => '0.2'.to_d,
-      'pcb_text_width' => '0.3'.to_d,
-      'pcb_text_size' => ['1.5'.to_d, '1.5'.to_d],
-      'mod_edge_width' => '0.12'.to_d,
-      'mod_text_size' => ['1'.to_d, '1'.to_d],
-      'mod_text_width' => '0.15'.to_d,
-      'pad_size' => ['1.524'.to_d, '1.524'.to_d],
-      'pad_drill' => '0.762'.to_d,
-      'pad_to_mask_clearance' => '0.051'.to_d,
-      'solder_mask_min_width' => '0.25'.to_d,
-      'aux_axis_origin' => ['0'.to_d, '0'.to_d],
-      'visible_elements' => 'FFFFFF7F',
-      'pcbplotparams' => {
-        'layerselection' => '0x010fc_ffffffff',
-        'usegerberextensions' => false,
-        'usegerberattributes' => false,
-        'usegerberadvancedattributes' => false,
-        'creategerberjobfile' => false,
-        'excludeedgelayer' => true,
-        'linewidth' => '0.150000'.to_d,
-        'plotframeref' => false,
-        'viasonmask' => false,
-        'mode' => 1,
-        'useauxorigin' => false,
-        'hpglpennumber' => 1,
-        'hpglpenspeed' => '20', #TODO: What to do about this? Int or BigDec?
-        'hpglpendiameter' => '15.000000'.to_d,
-        'psnegative' => false,
-        'psa4output' => false,
-        'plotreference' => true,
-        'plotvalue' => true,
-        'plotinvisibletext' => false,
-        'padsonsilk' => false,
-        'subtractmaskfromsilk' => false,
-        'outputformat' => 1,
-        'mirror' => false,
-        'drillshape' => 1,
-        'scaleselection' => '1', #TODO: What to do about this? Int or BigDec?
-        'outputdirectory' => ''
-      }
-    }
-
-    @list_of_nets = {
-      0 => ''
-    }
-
-    #TODO: Writer (and parser) will have to be able to deal with the options list correctly
-    @list_of_net_classes = [
-      { 'name' => 'Default',
-        'description' => 'This is the default net class.',
-        'options' => {
-          'clearance' => '0.2'.to_d,
-          'trace_width' => '0.25'.to_d,
-          'via_dia' => '0.8'.to_d,
-          'via_drill' => '0.4'.to_d,
-          'uvia_dia' => '0.3'.to_d,
-          'uvia_drill' => '0.1'.to_d
-        }
-      }
-    ]
-
-    @list_of_modules = []
-    @list_of_graphic_items = []
-    @list_of_tracks = []
-    @list_of_zones = []
+    )
+    @setup = OpenStruct.new(
+      last_trace_width: '0.25'.to_d,
+      trace_clearance: '0.2'.to_d,
+      zone_clearance: '0.508'.to_d,
+      zone_45_only: 'no',
+      trace_min: '0.2'.to_d,
+      via_size: '0.8'.to_d,
+      via_drill: '0.4'.to_d,
+      via_min_size: '0.4'.to_d,
+      via_min_drill: '0.3'.to_d,
+      uvia_size: '0.3'.to_d,
+      uvia_drill: '0.1'.to_d,
+      uvias_allowed: 'no',
+      uvia_min_size: '0.2'.to_d,
+      uvia_min_drill: '0.1'.to_d,
+      edge_width: '0.05'.to_d,
+      segment_width: '0.2'.to_d,
+      pcb_text_width: '0.3'.to_d,
+      pcb_text_size: ['1.5'.to_d, '1.5'.to_d],
+      mod_edge_width: '0.12'.to_d,
+      mod_text_size: ['1'.to_d, '1'.to_d],
+      mod_text_width: '0.15'.to_d,
+      pad_size: ['1.524'.to_d, '1.524'.to_d],
+      pad_drill: '0.762'.to_d,
+      pad_to_mask_clearance: '0.051'.to_d,
+      solder_mask_min_width: '0.25'.to_d,
+      aux_axis_origin: ['0'.to_d, '0'.to_d],
+      visible_elements: 'FFFFFF7F',
+      pcbplotparams: OpenStruct.new(
+        layerselection: '0x010fc_ffffffff',
+        usegerberextensions: false,
+        usegerberattributes: false,
+        usegerberadvancedattributes: false,
+        creategerberjobfile: false,
+        excludeedgelayer: true,
+        linewidth: '0.150000'.to_d,
+        plotframeref: false,
+        viasonmask: false,
+        mode: 1,
+        useauxorigin: false,
+        hpglpennumber: 1,
+        hpglpenspeed: '20', #TODO: What to do about this? Int or BigDec?
+        hpglpendiameter: '15.000000'.to_d,
+        psnegative: false,
+        psa4output: false,
+        plotreference: true,
+        plotvalue: true,
+        plotinvisibletext: false,
+        padsonsilk: false,
+        subtractmaskfromsilk: false,
+        outputformat: 1,
+        mirror: false,
+        drillshape: 1,
+        scaleselection: '1', #TODO: What to do about this? Int or BigDec?
+        outputdirectory: ''
+      )
+    )
+    #TODO: Make this a list of hashes, not just a single hash!!! We need to be able to add to it! (Don't we?? Is a hash OK??)
+    # @nets = {
+    #   0 => ''
+    # }
+    # @net_classes = []
+    @net_classes = {}
+    add_net_class(name: 'Default', description: 'This is the default net class.')
+    @nets = []
+    add_net(net_name: '', net_class: nil) # net 0 with no name doesn't get added to any net class
+    @modules = []
+    @graphic_items = []
+    @tracks = []
+    @zones = []
   end
 
+  def add_net_class(
+        name:,
+        description: '',
+        clearance: '0.2',
+        trace_width: '0.25',
+        via_dia: '0.8',
+        via_drill: '0.4',
+        uvia_dia: '0.3',
+        uvia_drill: '0.1',
+        nets: []
+  )
+    @net_classes[name] = OpenStruct.new(
+      description: description,
+      clearance: clearance.to_d,
+      trace_width: trace_width.to_d,
+      via_dia: via_dia.to_d,
+      via_drill: via_drill.to_d,
+      uvia_dia: uvia_dia.to_d,
+      uvia_drill: uvia_drill.to_d,
+      nets: nets
+    )
+  end
 
-  #TODO: Add method to add modules
-  #TODO: Add method to add graphic lines
-  #TODO: Add method to add tracks
-  #TODO: Add method to add zones
+  def add_net(net_name:, net_class: 'Default')
+    @nets << net_name
+    @general.nets += 1
+    # add net to net_class:
+    if net_class
+      @net_classes[net_class].nets << net_name
+    end
+  end
 
+  def add_module
+    #TODO: Implement this!
+    @general.modules += 1
+  end
+
+  def add_graphic_item
+    #TODO: Implement this!
+  end
+
+  def add_track
+    #TODO: Implement this!
+    @general.tracks += 1
+  end
+
+  def add_zone
+    #TODO: Implement this!
+    @general.zones += 1
+  end
 
   def write()
     #TODO: or should this be render() or generate() or something else??
@@ -345,4 +373,104 @@ require_relative "kicad_pcb/version"
 #     )
 
 
+
+
+
+# # If you make a new instance of KicadPcb, for example like so:
+#
+# pcb = KicadPcb.new
+#
+# # It will have all of the following accessors:
+#
+# pcb.header
+# pcb.general
+# pcb.general.thickness
+# pcb.general.drawings
+# pcb.general.tracks
+# pcb.general.zones
+# pcb.general.modules
+# pcb.general.nets
+# pcb.page
+# pcb.layers
+# pcb.layers.'0'    # This layers stuff needs work, may change, probably isn't even how it's listed here...
+# pcb.layers.'31'
+# pcb.layers.'32'
+# pcb.layers.'33'
+# pcb.layers.'34'
+# pcb.layers.'35'
+# pcb.layers.'36'
+# pcb.layers.'37'
+# pcb.layers.'38'
+# pcb.layers.'39'
+# pcb.layers.'40'
+# pcb.layers.'41'
+# pcb.layers.'42'
+# pcb.layers.'43'
+# pcb.layers.'44'
+# pcb.layers.'45'
+# pcb.layers.'46'
+# pcb.layers.'47'
+# pcb.layers.'48'
+# pcb.layers.'49'
+# pcb.setup
+# pcb.setup.last_trace_width
+# pcb.setup.trace_clearance
+# pcb.setup.zone_clearance
+# pcb.setup.zone_45_only
+# pcb.setup.trace_min
+# pcb.setup.via_size
+# pcb.setup.via_drill
+# pcb.setup.via_min_size
+# pcb.setup.via_min_drill
+# pcb.setup.uvia_size
+# pcb.setup.uvia_drill
+# pcb.setup.uvias_allowed
+# pcb.setup.uvia_min_size
+# pcb.setup.uvia_min_drill
+# pcb.setup.edge_width
+# pcb.setup.segment_width
+# pcb.setup.pcb_text_width
+# pcb.setup.pcb_text_size
+# pcb.setup.mod_edge_width
+# pcb.setup.mod_text_size
+# pcb.setup.mod_text_width
+# pcb.setup.pad_size
+# pcb.setup.pad_drill
+# pcb.setup.pad_to_mask_clearance
+# pcb.setup.solder_mask_min_width
+# pcb.setup.aux_axis_origin
+# pcb.setup.visible_elements
+# pcb.setup.pcbplotparams
+# pcb.setup.pcbplotparams.layerselection
+# pcb.setup.pcbplotparams.usegerberextensions
+# pcb.setup.pcbplotparams.usegerberattributes
+# pcb.setup.pcbplotparams.usegerberadvancedattributes
+# pcb.setup.pcbplotparams.creategerberjobfile
+# pcb.setup.pcbplotparams.excludeedgelayer
+# pcb.setup.pcbplotparams.linewidth
+# pcb.setup.pcbplotparams.plotframeref
+# pcb.setup.pcbplotparams.viasonmask
+# pcb.setup.pcbplotparams.mode
+# pcb.setup.pcbplotparams.useauxorigin
+# pcb.setup.pcbplotparams.hpglpennumber
+# pcb.setup.pcbplotparams.hpglpenspeed
+# pcb.setup.pcbplotparams.hpglpendiameter
+# pcb.setup.pcbplotparams.psnegative
+# pcb.setup.pcbplotparams.psa4output
+# pcb.setup.pcbplotparams.plotreference
+# pcb.setup.pcbplotparams.plotvalue
+# pcb.setup.pcbplotparams.plotinvisibletext
+# pcb.setup.pcbplotparams.padsonsilk
+# pcb.setup.pcbplotparams.subtractmaskfromsilk
+# pcb.setup.pcbplotparams.outputformat
+# pcb.setup.pcbplotparams.mirror
+# pcb.setup.pcbplotparams.drillshape
+# pcb.setup.pcbplotparams.scaleselection
+# pcb.setup.pcbplotparams.outputdirectory
+# pcb.nets
+# pcb.net_classes
+# pcb.modules
+# pcb.graphic_items
+# pcb.tracks
+# pcb.zones
 
