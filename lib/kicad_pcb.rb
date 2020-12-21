@@ -84,19 +84,12 @@ class KicadPcb
   # end
 
 
-
-
   #TODO: What are some options that might need to be set upon doing KicadPcb.new?? Add them to the initializer arguments but with defaults.
   def initialize()
     #TODO: Find out if I can or should change the host to mention my ruby program?
     @header = 'kicad_pcb (version 20171130) (host pcbnew "(5.1.2-1)-1")'
     @general = OpenStruct.new(
       thickness: '1.6'.to_d,
-      drawings: 0,
-      tracks: 0, #TODO: Make this be a function that counts them in @tracks instead of a value that needs changing!
-      zones: 0, #TODO: Make this be a function that counts them in @zones instead of a value that needs changing!
-      modules: 0, #TODO: Make this be a function that counts them in @modules instead of a value that needs changing!
-      nets: 0 #TODO: Make this be a function that counts them in @nets instead of a value that needs changing!
     )
     @page = 'A4' # The docs consider this a part of the General Section, even though it's a separate item!
     # We might not want to do this one right away, in case they're overridden or duplicated or something in a user pcb file?
@@ -219,7 +212,6 @@ class KicadPcb
 
   def add_net(net_name:, net_class: 'Default')
     @nets << net_name
-    @general.nets += 1
     # add net to net_class:
     if net_class
       @net_classes[net_class].nets << net_name
@@ -228,7 +220,6 @@ class KicadPcb
 
   def add_module
     #TODO: Implement this!
-    @general.modules += 1
   end
 
   def add_graphic_item
@@ -237,12 +228,10 @@ class KicadPcb
 
   def add_track
     #TODO: Implement this!
-    @general.tracks += 1
   end
 
   def add_zone
     #TODO: Implement this!
-    @general.zones += 1
   end
 
   def write()
@@ -385,11 +374,6 @@ require_relative "kicad_pcb/version"
 # pcb.header
 # pcb.general
 # pcb.general.thickness
-# pcb.general.drawings
-# pcb.general.tracks
-# pcb.general.zones
-# pcb.general.modules
-# pcb.general.nets
 # pcb.page
 # pcb.layers
 # pcb.layers.'0'    # This layers stuff needs work, may change, probably isn't even how it's listed here...
@@ -473,4 +457,14 @@ require_relative "kicad_pcb/version"
 # pcb.graphic_items
 # pcb.tracks
 # pcb.zones
+
+
+# The following are NOT attributes, since they're derived directly from the instance variables:
+#
+# pcb.general.drawings   -> use pcb.graphic_items.count instead
+# pcb.general.tracks     -> use pcb.tracks.count instead
+# pcb.general.zones      -> use pcb.zones.count instead
+# pcb.general.modules    -> use pcb.modules.count instead
+# pcb.general.nets       -> use pcb.nets.count instead
+
 

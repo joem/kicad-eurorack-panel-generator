@@ -59,7 +59,25 @@ class KicadPcb
     end
 
     def write_general
-      multi_line_list(keyword: 'general', data: @kicad_pcb_object.general)
+      # multi_line_list(keyword: 'general', data: @kicad_pcb_object.general)
+      general_output = ''
+      general_output << write_open_list
+      general_output << "general\n"
+      @kicad_pcb_object.general.to_h.each do |key, value|
+        if [Hash, OpenStruct].any? { |c| value.is_a? c }
+          general_output << indent(multi_line_list(keyword: key, data: value), 2)
+          general_output << "\n"
+        else
+          general_output << single_line_list(keyword: key, data: format(value), newline: true, indent_amount: 2)
+        end
+      end
+      general_output << single_line_list(keyword: 'drawings', data: format(@kicad_pcb_object.graphic_items.count), newline: true, indent_amount: 2)
+      general_output << single_line_list(keyword: 'tracks', data: format(@kicad_pcb_object.tracks.count), newline: true, indent_amount: 2)
+      general_output << single_line_list(keyword: 'zones', data: format(@kicad_pcb_object.zones.count), newline: true, indent_amount: 2)
+      general_output << single_line_list(keyword: 'modules', data: format(@kicad_pcb_object.modules.count), newline: true, indent_amount: 2)
+      general_output << single_line_list(keyword: 'nets', data: format(@kicad_pcb_object.nets.count), newline: true, indent_amount: 2)
+      general_output << write_close_list
+      return general_output
     end
 
     def write_page
@@ -76,13 +94,7 @@ class KicadPcb
 
     def write_nets
       nets_output = ''
-      # nets = @kicad_pcb_object.nets
-      # nets.keys.sort.each do |key|
-      #   nets_output << single_line_list(keyword: 'net', data: [key, nets[key]], newline: true)
-      # end
-      nets = @kicad_pcb_object.nets
-      nets.each_with_index do |net_name, index|
-        # nets_output << single_line_list(keyword: 'net', data: [index, format(net_name)], newline: true)
+      @kicad_pcb_object.nets.each_with_index do |net_name, index|
         nets_output << single_line_list(keyword: 'net', data: [index, net_name], newline: true)
       end
       return nets_output
@@ -95,8 +107,7 @@ class KicadPcb
         nets = the_net_class.nets
         net_classes_output << write_open_list
         net_classes_output << "net_class #{format(name)} #{format(the_net_class.description)}\n"
-        # remove name and description fron the_net_class
-        # the_net_class.delete_field(:name)
+        # remove nets and description fron the_net_class
         the_net_class.delete_field(:description)
         the_net_class.delete_field(:nets)
         # iterate over what's left
@@ -163,7 +174,6 @@ class KicadPcb
         multi_line_list_output << "#{keyword}\n"
         # write each item in data with indent
         data.each do |key, value|
-          # if value.is_a?(Hash)
           if [Hash, OpenStruct].any? { |c| value.is_a? c }
             # If value is a hash or openstruct, do a nested multi-line list
             # (treating openstruct exactly the same in this case because the first openstruct check
