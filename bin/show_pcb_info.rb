@@ -1,9 +1,9 @@
 require 'bigdecimal'
 require 'bigdecimal/util'
 require 'optparse'
-require_relative 'lib/sexpr_parser.rb'
-# require_relative 'lib/eurorack.rb'
-# require_relative 'lib/parsed_part.rb'
+require_relative '../lib/sexpr_parser.rb'
+# require_relative '..lib/eurorack.rb'
+# require_relative '../lib/parsed_part.rb'
 
 #TODO: Update this to just show interesting pcb info
 #        - size of board

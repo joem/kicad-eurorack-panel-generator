@@ -1,5 +1,5 @@
 require 'optparse'
-require_relative './lib/kicad_pcb.rb'
+require_relative '../lib/kicad_pcb.rb'
 
 # This generates a PCB of the specified size.
 # If no size is specified, it makes it 100mm x 100mm.
