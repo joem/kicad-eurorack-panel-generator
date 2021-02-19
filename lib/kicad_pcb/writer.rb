@@ -1,6 +1,11 @@
 class KicadPcb
   class Writer
 
+    # * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+    #TODO: Rework this, since all classes have a #to_sexpr method that renders things.
+    #       - all this needs to do is call #to_sexpr on the pcb and then write it to a file???
+    # * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
     # Refer to section 4 in this document to see the file spec: https://kicad.org/help/legacy_file_format_documentation.pdf
 
     def initialize(kicad_pcb_object)
@@ -214,72 +219,78 @@ class KicadPcb
       end
     end
 
-    # The meat of this method was taken from _indent method in this library:
-    # https://github.com/samueldana/indentation
-    # That library is copyright © 2010 Prometheus Computing
-    # and uses the MIT License.
-    # I'm no legal expert, but hopefully this meets the MIT license reqs.?
-    # (If not, let me know and I'll update accordingly!)
-    def indent(str, num = nil, i_char = ' ')
-      str.to_s.split("\n", -1).collect{|line| (i_char * num) + line}.join("\n")
-    end
+    ########################################################
+    #NOTE: The below methods have all been moved to Render.
+    ########################################################
+    #     (if you need them here, you should include Render)
+    ########################################################
 
-    # Formats values according to type, according to kicad_pcb file specs.
-    #
-    # It will not double-format a string, so don't worry about over-formatting.
-    #
-    def format(value)
-      if value.is_a?(BigDecimal)
-        value.to_s("F")
-      elsif value.is_a?(Float)
-        value.to_s
-      elsif value.is_a?(Integer)
-        value.to_s
-      elsif value.is_a?(String)
-        if value == ''
-          '""'
-        elsif check_if_already_quoted(value)
-          value
-        elsif check_for_characters_that_need_quoting(value)
-          "\"#{value}\""
-        elsif check_for_dash_anywhere_but_first(value)
-          "\"#{value}\""
-        else
-          value
-        end
-      else
-        value # Not sure what else it might be, but I guess just use value?? Maybe it should raise an error?
-      end
-    end
+    ## The meat of this method was taken from _indent method in this library:
+    ## https://github.com/samueldana/indentation
+    ## That library is copyright © 2010 Prometheus Computing
+    ## and uses the MIT License.
+    ## I'm no legal expert, but hopefully this meets the MIT license reqs.?
+    ## (If not, let me know and I'll update accordingly!)
+    #def indent(str, num = nil, i_char = ' ')
+    #  str.to_s.split("\n", -1).collect{|line| (i_char * num) + line}.join("\n")
+    #end
 
-    def check_for_characters_that_need_quoting(the_string)
-      characters_that_need_quoting = [' ', "\t", '(', ')', '%', '{', '}']
-      characters_that_need_quoting.any? { |s| the_string.include? s }
-    end
+    ## Formats values according to type, according to kicad_pcb file specs.
+    ##
+    ## It will not double-format a string, so don't worry about over-formatting.
+    ##
+    #def format(value)
+    #  if value.is_a?(BigDecimal)
+    #    value.to_s("F")
+    #  elsif value.is_a?(Float)
+    #    value.to_s
+    #  elsif value.is_a?(Integer)
+    #    value.to_s
+    #  elsif value.is_a?(String)
+    #    if value == ''
+    #      '""'
+    #    elsif check_if_already_quoted(value)
+    #      value
+    #    elsif check_for_characters_that_need_quoting(value)
+    #      "\"#{value}\""
+    #    elsif check_for_dash_anywhere_but_first(value)
+    #      "\"#{value}\""
+    #    else
+    #      value
+    #    end
+    #  else
+    #    value # Not sure what else it might be, but I guess just use value?? Maybe it should raise an error?
+    #  end
+    #end
 
-    def check_for_dash_anywhere_but_first(the_string)
-      # remove first character
-      the_string = the_string[1..-1]
-      # check for dashes
-      the_string.include? '-'
-    end
+    #def check_for_characters_that_need_quoting(the_string)
+    #  characters_that_need_quoting = [' ', "\t", '(', ')', '%', '{', '}']
+    #  characters_that_need_quoting.any? { |s| the_string.include? s }
+    #end
 
-    # See if it starts and ends with quotes already
-    # If it does, see if there are any other quotes
-    #   If so, raise error
-    #   If not, return true
-    # If it doesn't, return false
-    def check_if_already_quoted(the_string)
-      if ((the_string[0] == '"') && (the_string[-1] == '"'))
-        if the_string[1..-2].include?('"')
-          raise "String passed to #{__callee__} has too many quotes"
-        else
-          true
-        end
-      else
-        false
-      end
-    end
+    #def check_for_dash_anywhere_but_first(the_string)
+    #  # remove first character
+    #  the_string = the_string[1..-1]
+    #  # check for dashes
+    #  the_string.include? '-'
+    #end
+
+    ## See if it starts and ends with quotes already
+    ## If it does, see if there are any other quotes
+    ##   If so, raise error
+    ##   If not, return true
+    ## If it doesn't, return false
+    #def check_if_already_quoted(the_string)
+    #  if ((the_string[0] == '"') && (the_string[-1] == '"'))
+    #    if the_string[1..-2].include?('"')
+    #      raise "String passed to #{__callee__} has too many quotes"
+    #    else
+    #      true
+    #    end
+    #  else
+    #    false
+    #  end
+    #end
 
   end
 end

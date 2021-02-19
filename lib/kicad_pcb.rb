@@ -5,23 +5,42 @@ require 'time'
 require_relative 'kicad_pcb/parser'
 require_relative 'kicad_pcb/writer'
 
+# require_relative 'kicad_pcb/graphic_item' # required in graphic_items
+require_relative 'kicad_pcb/graphic_items'
+require_relative 'kicad_pcb/header'
+# require_relative 'kicad_pcb/layer' # required in layers
+require_relative 'kicad_pcb/layers'
+# require_relative 'kicad_pcb/net_class' # required in net_classes
+require_relative 'kicad_pcb/net_classes'
+# require_relative 'kicad_pcb/net' # required in nets
+require_relative 'kicad_pcb/nets'
+require_relative 'kicad_pcb/page'
+# require_relative 'kicad_pcb/part' # required in parts
+require_relative 'kicad_pcb/parts'
+require_relative 'kicad_pcb/setup'
+# require_relative 'kicad_pcb/track' # required in tracks
+require_relative 'kicad_pcb/tracks'
+# require_relative 'kicad_pcb/zone' # required in zones
+require_relative 'kicad_pcb/zones'
+
+
 # Some notes about the KiCad PCB file format:
 # - The coordinate system is a screen coordinate with (0,0) in the top left.
 # - The units are always mm regardless of your grid unit settings.
 
 class KicadPcb
 
-  attr_accessor :header
-  attr_accessor :general
-  attr_accessor :page
-  attr_accessor :layers
-  attr_accessor :setup
-  attr_accessor :nets
-  attr_accessor :net_classes
-  attr_accessor :modules
-  attr_accessor :graphic_items
-  attr_accessor :tracks
-  attr_accessor :zones
+  # attr_accessor :header
+  # attr_accessor :general
+  # attr_accessor :page
+  # attr_accessor :layers
+  # attr_accessor :setup
+  # attr_accessor :nets
+  # attr_accessor :net_classes
+  # attr_accessor :modules
+  # attr_accessor :graphic_items
+  # attr_accessor :tracks
+  # attr_accessor :zones
 
   # top level things:
   #
@@ -86,6 +105,31 @@ class KicadPcb
 
   #TODO: What are some options that might need to be set upon doing KicadPcb.new?? Add them to the initializer arguments but with defaults.
   def initialize()
+
+    # @general = []           #=> some sort of structure defined in KicadPcb !!!!
+    @page = Page.new
+
+    @layers = Layers.new
+    @layers.set_default_layers
+
+    @setup = Setup.new
+    @setup.set_default_setup
+
+    @nets = Nets.new
+
+    @net_classes = NetClasses.new
+    @net_classes.add_default_net_class
+
+    @parts = Parts.new
+
+    @graphic_items = GraphicItems.new
+
+    @tracks = Tracks.new
+
+    @zones = Zones.new
+
+
+
     #TODO: Find out if I can or should change the host to mention my ruby program?
     @header = 'kicad_pcb (version 20171130) (host pcbnew "(5.1.2-1)-1")'
     @general = OpenStruct.new(
@@ -250,7 +294,7 @@ class KicadPcb
 
 end
 
-require_relative "kicad_pcb/version"
+require_relative "kicad_pcb/version" #FIXME: Why is this at the end????
 
 
 # Below is a blank pcb. It was made by starting a blank KiCad project then opening and then saving the pcb.
