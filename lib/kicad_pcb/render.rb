@@ -60,6 +60,9 @@ module Render
     elsif the_value.is_a?(Integer)
       the_value.to_s
     elsif the_value.is_a?(String)
+      # Convert \n and \t to \\n and \\t -- and don't double-convert it
+      the_value = the_value.gsub(/\n/, '\\n')
+      the_value = the_value.gsub(/\t/, '\\t')
       if the_value == ''
         '""'
       elsif check_if_already_quoted(the_value)
@@ -77,7 +80,7 @@ module Render
   end
 
   def check_for_characters_that_need_quoting(the_string)
-    characters_that_need_quoting = [' ', "\t", '(', ')', '%', '{', '}']
+    characters_that_need_quoting = [' ', "\t", "\\t", "\n", "\\n", '(', ')', '%', '{', '}']
     characters_that_need_quoting.any? { |s| the_string.include? s }
   end
 
