@@ -56,6 +56,20 @@ class KicadPcb
       output << ')'
     end
 
+    def to_h
+      {
+        name: @name.to_s,
+        description: @description.to_s,
+        clearance: @clearance.to_s,
+        trace_width: @trace_width.to_s,
+        via_dia: @via_dia.to_s,
+        via_drill: @via_drill.to_s,
+        uvia_dia: @uvia_dia.to_s,
+        uvia_drill: @uvia_drill.to_s,
+        nets: @nets.to_a.map { |item| item.to_s }
+      }
+    end
+
   end
 end
 
