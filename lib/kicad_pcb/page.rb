@@ -1,8 +1,10 @@
+# require_relative 'render'
+require_relative 'param'
+
 class KicadPcb
   class Page
 
-require_relative 'render'
-    include Render # Render contains #indent, #render_value, #render_array, and #render_hash
+    # include Render # Render contains #indent, #render_value, #render_array, and #render_hash
 
     def initialize
     end
@@ -10,7 +12,7 @@ require_relative 'render'
     def to_sexpr
     end
     def initialize(page = 'A4')
-      @page = page
+      @page = Param[page]
     end
 
     def to_sexpr
