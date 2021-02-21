@@ -11,23 +11,21 @@ class KicadPcb
     # Forward some Hash and Enumerable methods straight to the hash
     def_delegators :@layers, :[], :delete, :each, :include?, :key?, :length, :size
 
-    def initialize(hash = {})
-      # set up a hash
-      @layers = hash
+    def initialize(layers_hash = nil)
+      # Set up a hash
+      @layers = {}
+      # If we were passed a hash, use it to set some layers
+      if layers_hash
+        layers_hash.each do |number, layer_hash|
+          @layers[number.to_s] = Layer.new({number: layer_hash[:number], name: layer_hash[:name], type: layer_hash[:type]})
+        end
+      end
       #TODO: Make @layers be a hash indexed by layer name instead of number? Since layer names are the only reference used elsewhere, it'd make it easy to check for layer names?
     end
 
-    #### Update: don't use #[]= .... use #set instead!
-    ## No need for a #add method, just use #[]= assignment instead.
-    #def []=(key, value)
-    #  #TODO: Fix this! It should create a new Layer object!!!! (maybe store that as the value??)
-    #  # def initialize(number, name, type)
-    #  @layers[key] = value
-    #  @layers[key] = value
-    #end
-
+    #TODO: Make this take a hash as input??
     def set(number, name, type)
-      @layers[number.to_s] = Layer.new(number, name, type)
+      @layers[number.to_s] = Layer.new({number: number, name: name, type: type})
     end
 
     def set_default_layers
@@ -51,12 +49,8 @@ class KicadPcb
       set('47', 'F.CrtYd', 'user')
       set('48', 'B.Fab', 'user')
       set('49', 'F.Fab', 'user')
-      self # Otherwise it just returns the return from the last #set call, which is kind of weird.
+      self # Without this, it just returns the return from the last #set call, which is kind of weird.
     end
-
-    # def layers # maybe have this for debugging??
-    #   @layers
-    # end
 
     def to_sexpr
       # output the opening (layers line
@@ -67,13 +61,21 @@ class KicadPcb
       output << '(layers'
       output << "\n"
       if self.length > 0
-        @layers.each do |key, value|
+        @layers.each do |_key, value|
           output << "  #{value.to_sexpr}"
           output << "\n"
         end
       end
       output << ')'
       return output
+    end
+
+    def to_h
+      # Just in case compatibility with an older version is needed:
+      # Ruby 1.8.7+: Hash[@layers.map{|key,value| [key, value.to_h] } ]
+      # Ruby 2.1+: @layers.map { |key, value| [key, value.to_h] }.to_h
+      # Ruby 2.4+:
+      @layers.transform_values {|value| value.to_h}
     end
 
   end

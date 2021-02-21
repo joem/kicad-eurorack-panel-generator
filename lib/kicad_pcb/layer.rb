@@ -1,19 +1,39 @@
+require 'forwardable'
 require_relative 'render'
+require_relative 'param'
 
 class KicadPcb
   class Layer
 
+    extend Forwardable # needed for the #def_delegators forwarding
     include Render # Render contains #indent, #render_value, #render_array, and #render_hash
 
-    def initialize(number, name, type)
-      @number = number
-      @name = name
-      @type = type
+    attr_reader :number, :name, :type
+
+    # Forward some Hash and Enumerable methods straight to the hash
+    def_delegators :to_h, :[], :each, :include?, :key?, :length, :size
+
+    # def initialize(number, name, type)
+    def initialize(layer_hash)
+      # @number = Param[number]
+      @number = Param[layer_hash[:number]]
+      # @name = Param[name]
+      @name = Param[layer_hash[:name]]
+      # @type = Param[type]
+      @type = Param[layer_hash[:type]]
     end
 
     def to_sexpr
-      # "(#{render_value(@number)} #{render_value(@name)} #{render_value(@type)})"
-      "(#{render_array([@number, @name, @type])})"
+      "(#{@number} #{@name} #{@type})"
+    end
+
+    def to_h
+      {
+        number: @number.to_s,
+        name: @name.to_s,
+        type: @type.to_s
+      }
+      # The #to_s's above aren't really necessary, but they make the hash more manageable for external uses, I guess?
     end
 
   end
