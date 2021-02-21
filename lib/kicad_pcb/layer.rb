@@ -8,18 +8,15 @@ class KicadPcb
     extend Forwardable # needed for the #def_delegators forwarding
     include Render # Render contains #indent, #render_value, #render_array, and #render_hash
 
+    #TODO: Make this be attr_accessor instead??
     attr_reader :number, :name, :type
 
     # Forward some Hash and Enumerable methods straight to the hash
     def_delegators :to_h, :[], :each, :include?, :key?, :length, :size
 
-    # def initialize(number, name, type)
     def initialize(layer_hash)
-      # @number = Param[number]
       @number = Param[layer_hash[:number]]
-      # @name = Param[name]
       @name = Param[layer_hash[:name]]
-      # @type = Param[type]
       @type = Param[layer_hash[:type]]
     end
 
