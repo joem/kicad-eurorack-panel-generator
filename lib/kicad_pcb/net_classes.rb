@@ -14,14 +14,19 @@ class KicadPcb
     def_delegators :@net_classes, :[], :delete, :each, :include?, :key?, :length, :size
 
 
-    def initialize
-      #TODO: Add some way to initalize this with some values, optionally.
+    def initialize(net_classes_hash = nil)
+      # Set up a hash
       @net_classes = {}
+      # If we were passed a hash, use it to set some net classes
+      if net_classes_hash
+        net_classes_hash.each do |_name, net_class_hash|
+          add_net_class(net_class_hash)
+        end
+      end
     end
 
     def add_net_class(net_class_hash)
-      # @net_classes << NetClass.new(net_class_hash)
-      @net_classes[net_class_hash[:name]] = NetClass.new(net_class_hash)
+      @net_classes[net_class_hash[:name].to_s] = NetClass.new(net_class_hash)
     end
 
     def add_default_net_class
@@ -45,6 +50,10 @@ class KicadPcb
         output << "\n"
       end
       return output
+    end
+
+    def to_h
+      @net_classes.transform_values {|value| value.to_h}
     end
 
   end
