@@ -1,3 +1,4 @@
+require 'forwardable'
 require_relative 'net_class'
 require_relative 'render'
 
@@ -6,18 +7,21 @@ require_relative 'render'
 class KicadPcb
   class NetClasses
 
+    extend Forwardable # needed for the #def_delegators forwarding
     include Render # Render contains #indent, #render_value, #render_array, and #render_hash
+
+    # Forward some Hash and Enumerable methods straight to the hash
+    def_delegators :@net_classes, :[], :delete, :each, :include?, :key?, :length, :size
+
 
     def initialize
       #TODO: Add some way to initalize this with some values, optionally.
-      #TODO: Decide if this should be an array or hash.
-      #       - If net classes can't have duplicate names, then maybe it should be a hash indexed by names?
-      #       - If they can have duplicate names, then an array is right.
-      @net_classes = []
+      @net_classes = {}
     end
 
     def add_net_class(net_class_hash)
-      @net_classes << NetClass.new(net_class_hash)
+      # @net_classes << NetClass.new(net_class_hash)
+      @net_classes[net_class_hash[:name]] = NetClass.new(net_class_hash)
     end
 
     def add_default_net_class
@@ -36,7 +40,7 @@ class KicadPcb
 
     def to_sexpr
       output = ''
-      @net_classes.each do |net_class|
+      @net_classes.each do |_key, net_class|
         output << net_class.to_sexpr
         output << "\n"
       end

@@ -68,16 +68,6 @@ class KicadPcb
       @setup[:pcbplotparams][:outputdirectory] = ''
     end
 
-    def [](key)
-      @layers[key.to_s]
-    end
-
-    def length
-      @layers.length
-    end
-
-    alias size length
-
     def to_sexpr
       # output the opening (setup line
       # iterate over hash (without pcbplotparams) and output them

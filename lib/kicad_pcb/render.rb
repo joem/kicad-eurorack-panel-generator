@@ -1,5 +1,6 @@
 require 'bigdecimal'
 require 'bigdecimal/util'
+# require_relative 'param'
 
 module Render
 
@@ -48,6 +49,10 @@ module Render
   # It will not double-format a string, so don't worry about over-formatting.
   #
   def render_value(the_value)
+    #TODO: How to handle if it's a Param correctly????????
+    # if the_value.is_a?(KicadPcb::Param)
+    #   the_value.to_s
+    # elsif the_value.is_a?(BigDecimal)
     if the_value.is_a?(BigDecimal)
       the_value.to_s("F")
     elsif the_value.is_a?(Float)

@@ -1,14 +1,20 @@
+require 'forwardable'
 require_relative 'layer'
 require_relative 'render'
 
 class KicadPcb
   class Layers
 
+    extend Forwardable # needed for the #def_delegators forwarding
     include Render # Render contains #indent, #render_value, #render_array, and #render_hash
+
+    # Forward some Hash and Enumerable methods straight to the hash
+    def_delegators :@layers, :[], :delete, :each, :include?, :key?, :length, :size
 
     def initialize(hash = {})
       # set up a hash
       @layers = hash
+      #TODO: Make @layers be a hash indexed by layer name instead of number? Since layer names are the only reference used elsewhere, it'd make it easy to check for layer names?
     end
 
     #### Update: don't use #[]= .... use #set instead!
@@ -45,17 +51,8 @@ class KicadPcb
       set('47', 'F.CrtYd', 'user')
       set('48', 'B.Fab', 'user')
       set('49', 'F.Fab', 'user')
+      self # Otherwise it just returns the return from the last #set call, which is kind of weird.
     end
-
-    def [](key)
-      @layers[key.to_s]
-    end
-
-    def length
-      @layers.length
-    end
-
-    alias size length
 
     # def layers # maybe have this for debugging??
     #   @layers
