@@ -106,6 +106,9 @@ class KicadPcb
   #TODO: What are some options that might need to be set upon doing KicadPcb.new?? Add them to the initializer arguments but with defaults.
   def initialize()
 
+    @header = Header.new
+    @header.set_defaults
+
     # @general = []           #=> some sort of structure defined in KicadPcb !!!!
     @page = Page.new
 
