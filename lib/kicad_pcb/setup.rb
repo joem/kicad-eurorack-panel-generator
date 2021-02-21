@@ -1,43 +1,46 @@
-require 'bigdecimal'
-require 'bigdecimal/util'
+require 'forwardable'
 require_relative 'render'
 
 class KicadPcb
   class Setup
 
+    extend Forwardable # needed for the #def_delegators forwarding
     include Render # Render contains #indent, #render_value, #render_array, and #render_hash
 
-    def initialize(options_hash = {})
-      @setup = options_hash
+    # Forward some Hash and Enumerable methods straight to the hash
+    def_delegators :@setup, :[], :delete, :each, :include?, :key?, :length, :size
+
+    def initialize(setup_hash = {})
+      @setup = setup_hash
     end
 
     def set_default_setup
-      @setup[:last_trace_width] = '0.25'.to_d
-      @setup[:trace_clearance] = '0.2'.to_d
-      @setup[:zone_clearance] = '0.508'.to_d
+      @setup[:last_trace_width] = '0.25'
+      @setup[:trace_clearance] = '0.2'
+      @setup[:zone_clearance] = '0.508'
       @setup[:zone_45_only] = 'no'
-      @setup[:trace_min] = '0.2'.to_d
-      @setup[:via_size] = '0.8'.to_d
-      @setup[:via_drill] = '0.4'.to_d
-      @setup[:via_min_size] = '0.4'.to_d
-      @setup[:via_min_drill] = '0.3'.to_d
-      @setup[:uvia_size] = '0.3'.to_d
-      @setup[:uvia_drill] = '0.1'.to_d
+      @setup[:trace_min] = '0.2'
+      @setup[:via_size] = '0.8'
+      @setup[:via_drill] = '0.4'
+      @setup[:via_min_size] = '0.4'
+      @setup[:via_min_drill] = '0.3'
+      @setup[:uvia_size] = '0.3'
+      @setup[:uvia_drill] = '0.1'
       @setup[:uvias_allowed] = 'no'
-      @setup[:uvia_min_size] = '0.2'.to_d
-      @setup[:uvia_min_drill] = '0.1'.to_d
-      @setup[:edge_width] = '0.05'.to_d
-      @setup[:segment_width] = '0.2'.to_d
-      @setup[:pcb_text_width] = '0.3'.to_d
-      @setup[:pcb_text_size] = ['1.5'.to_d, '1.5'.to_d]     # pair #TODO: How to enforce that it's a pair??
-      @setup[:mod_edge_width] = '0.12'.to_d
-      @setup[:mod_text_size] = ['1'.to_d, '1'.to_d]         # pair #TODO: How to enforce that it's a pair??
-      @setup[:mod_text_width] = '0.15'.to_d
-      @setup[:pad_size] = ['1.524'.to_d, '1.524'.to_d]      # pair #TODO: How to enforce that it's a pair??
-      @setup[:pad_drill] = '0.762'.to_d
-      @setup[:pad_to_mask_clearance] = '0.051'.to_d
-      @setup[:solder_mask_min_width] = '0.25'.to_d
-      @setup[:aux_axis_origin] = ['0'.to_d, '0'.to_d]       # pair #TODO: How to enforce that it's a pair??
+      @setup[:uvia_min_size] = '0.2'
+      @setup[:uvia_min_drill] = '0.1'
+      @setup[:edge_width] = '0.05'
+      @setup[:segment_width] = '0.2'
+      @setup[:pcb_text_width] = '0.3'
+      @setup[:pcb_text_size] = ['1.5', '1.5']     #TODO: How to enforce that it's a pair??
+      @setup[:mod_edge_width] = '0.12'
+      @setup[:mod_text_size] = ['1', '1']         #TODO: How to enforce that it's a pair??
+      @setup[:mod_text_width] = '0.15'
+      @setup[:pad_size] = ['1.524', '1.524']      #TODO: How to enforce that it's a pair??
+      @setup[:pad_drill] = '0.762'
+      @setup[:pad_to_mask_clearance] = '0.051'
+      @setup[:solder_mask_min_width] = '0.25'
+      @setup[:aux_axis_origin] = ['0', '0']       #TODO: How to enforce that it's a pair??
       @setup[:visible_elements] = 'FFFFFF7F'
       @setup[:pcbplotparams] = {}
       @setup[:pcbplotparams][:layerselection] = '0x010fc_ffffffff'
@@ -46,14 +49,14 @@ class KicadPcb
       @setup[:pcbplotparams][:usegerberadvancedattributes] = false
       @setup[:pcbplotparams][:creategerberjobfile] = false
       @setup[:pcbplotparams][:excludeedgelayer] = true
-      @setup[:pcbplotparams][:linewidth] = '0.150000'.to_d
+      @setup[:pcbplotparams][:linewidth] = '0.150000'
       @setup[:pcbplotparams][:plotframeref] = false
       @setup[:pcbplotparams][:viasonmask] = false
       @setup[:pcbplotparams][:mode] = 1
       @setup[:pcbplotparams][:useauxorigin] = false
       @setup[:pcbplotparams][:hpglpennumber] = 1
-      @setup[:pcbplotparams][:hpglpenspeed] = '20' #TODO: What to do about this? Int or BigDec?
-      @setup[:pcbplotparams][:hpglpendiameter] = '15.000000'.to_d
+      @setup[:pcbplotparams][:hpglpenspeed] = '20'
+      @setup[:pcbplotparams][:hpglpendiameter] = '15.000000'
       @setup[:pcbplotparams][:psnegative] = false
       @setup[:pcbplotparams][:psa4output] = false
       @setup[:pcbplotparams][:plotreference] = true
@@ -64,47 +67,15 @@ class KicadPcb
       @setup[:pcbplotparams][:outputformat] = 1
       @setup[:pcbplotparams][:mirror] = false
       @setup[:pcbplotparams][:drillshape] = 1
-      @setup[:pcbplotparams][:scaleselection] = '1' #TODO: What to do about this? Int or BigDec?
+      @setup[:pcbplotparams][:scaleselection] = '1'
       @setup[:pcbplotparams][:outputdirectory] = ''
+      self # Without this, it just returns the return from the last assignment, which is kind of weird.
     end
 
     def to_sexpr
       # output the opening (setup line
-      # iterate over hash (without pcbplotparams) and output them
-      # output the opening (pcbplotparams line
-      # iterate over pcbplotparams and output them
+      # iterate over hash and output them
       # output closing )
-      # output closing )
-      # OLD METHOD:
-      # # pcbplotparams = Marshal.load(Marshal.dump(@setup[:pcbplotparams]))
-      # # output = ''
-      # # output << '(setup'
-      # # output << "\n"
-      # # #TODO: This definitely feels like a method can be extracted here and reused...
-      # # if self.length > 0
-      # #   @setup.each do |key, value|
-      # #     next if key == :pcbplotparams
-      # #     if value.is_a? Array
-      # #       output << "  (#{key.to_s} #{value[0]} #{value[1]})"
-      # #     else
-      # #       output << "  (#{key.to_s} #{value})"
-      # #     end
-      # #     output << "\n"
-      # #   end
-      # #   output << '  (pcbplotparams'
-      # #   output << "\n"
-      # #   pcbplotparams.each do |key, value|
-      # #     if value.is_a? Array
-      # #       output << "  (#{key.to_s} #{value[0]} #{value[1]})"
-      # #     else
-      # #       output << "  (#{key.to_s} #{value})"
-      # #     end
-      # #     output << "\n"
-      # #   end
-      # #   output << '  )'
-      # # end
-      # # output << ')'
-      # # return output
       output = ''
       output << '(setup'
       output << "\n"
@@ -114,120 +85,70 @@ class KicadPcb
       return output
     end
 
-    #private
-
-    ##TODO: Is there a way to share these private methods amongst all the classes that need them??
-    ##       - Maybe make the classes inherit from a generic class?
-    ##       - Or can I `include` them or something like that?
-
-    ## The meat of this method was taken from _indent method in this library:
-    ## https://github.com/samueldana/indentation
-    ## That library is copyright © 2010 Prometheus Computing
-    ## and uses the MIT License.
-    ## I'm no legal expert, but hopefully this meets the MIT license reqs.?
-    ## (If not, let me know and I'll update accordingly!)
-    #def indent(str, num = nil, i_char = ' ')
-    #  str.to_s.split("\n", -1).collect{|line| (i_char * num) + line}.join("\n")
-    #end
-
-    ## Render an array as a string with a space between each array item.
-    ## Handles different types of array items, rendering appropriately.
-    #def render_array(the_array)
-    #  string_array = []
-    #  the_array.each do |item|
-    #    string_array << render_value(item)
-    #  end
-    #  return string_array.join(" ")
-    #end
-
-    ## Render a single value as a string.
-    ## Handles different types of values, rendering appropriately.
-    #def render_value(the_value)
-    #  if the_value.is_a? BigDecimal
-    #    the_value.to_s("F")
-    #  else
-    #    the_value.to_s
-    #  end
-    #end
-
-    #def render_hash(the_hash)
-    #  output = ""
-    #  the_hash.each do |key, value|
-    #    if value.is_a? Array
-    #      output << "(#{key.to_s} #{render_array(value)})"
-    #    elsif value.is_a? Hash
-    #      output << "(#{key.to_s}"
-    #      output << "\n"
-    #      output << indent(render_hash(value), 2)
-    #      output << ')'
-    #    else
-    #      output << "(#{key.to_s} #{render_value(value)})"
-    #    end
-    #    output << "\n"
-    #  end
-    #  return output
-    #end
+    def to_h
+      @setup
+    end
 
   end
 end
 
-
-
-# @setup = OpenStruct.new(
-#   last_trace_width: '0.25'.to_d,
-#   trace_clearance: '0.2'.to_d,
-#   zone_clearance: '0.508'.to_d,
-#   zone_45_only: 'no',
-#   trace_min: '0.2'.to_d,
-#   via_size: '0.8'.to_d,
-#   via_drill: '0.4'.to_d,
-#   via_min_size: '0.4'.to_d,
-#   via_min_drill: '0.3'.to_d,
-#   uvia_size: '0.3'.to_d,
-#   uvia_drill: '0.1'.to_d,
-#   uvias_allowed: 'no',
-#   uvia_min_size: '0.2'.to_d,
-#   uvia_min_drill: '0.1'.to_d,
-#   edge_width: '0.05'.to_d,
-#   segment_width: '0.2'.to_d,
-#   pcb_text_width: '0.3'.to_d,
-#   pcb_text_size: ['1.5'.to_d, '1.5'.to_d],
-#   mod_edge_width: '0.12'.to_d,
-#   mod_text_size: ['1'.to_d, '1'.to_d],
-#   mod_text_width: '0.15'.to_d,
-#   pad_size: ['1.524'.to_d, '1.524'.to_d],
-#   pad_drill: '0.762'.to_d,
-#   pad_to_mask_clearance: '0.051'.to_d,
-#   solder_mask_min_width: '0.25'.to_d,
-#   aux_axis_origin: ['0'.to_d, '0'.to_d],
-#   visible_elements: 'FFFFFF7F',
-#   pcbplotparams: OpenStruct.new(
-#     layerselection: '0x010fc_ffffffff',
-#     usegerberextensions: false,
-#     usegerberattributes: false,
-#     usegerberadvancedattributes: false,
-#     creategerberjobfile: false,
-#     excludeedgelayer: true,
-#     linewidth: '0.150000'.to_d,
-#     plotframeref: false,
-#     viasonmask: false,
-#     mode: 1,
-#     useauxorigin: false,
-#     hpglpennumber: 1,
-#     hpglpenspeed: '20', #TODO: What to do about this? Int or BigDec?
-#     hpglpendiameter: '15.000000'.to_d,
-#     psnegative: false,
-#     psa4output: false,
-#     plotreference: true,
-#     plotvalue: true,
-#     plotinvisibletext: false,
-#     padsonsilk: false,
-#     subtractmaskfromsilk: false,
-#     outputformat: 1,
-#     mirror: false,
-#     drillshape: 1,
-#     scaleselection: '1', #TODO: What to do about this? Int or BigDec?
-#     outputdirectory: ''
-#   )
-# )
+#  (setup
+#    (last_trace_width 0.5)
+#    (user_trace_width 0.5)
+#    (user_trace_width 0.75)
+#    (user_trace_width 1)
+#    (trace_clearance 0.2)
+#    (zone_clearance 0.508)
+#    (zone_45_only no)
+#    (trace_min 0.2)
+#    (via_size 0.8)
+#    (via_drill 0.4)
+#    (via_min_size 0.4)
+#    (via_min_drill 0.3)
+#    (uvia_size 0.3)
+#    (uvia_drill 0.1)
+#    (uvias_allowed no)
+#    (uvia_min_size 0.2)
+#    (uvia_min_drill 0.1)
+#    (edge_width 0.05)
+#    (segment_width 0.2)
+#    (pcb_text_width 0.3)
+#    (pcb_text_size 1.5 1.5)
+#    (mod_edge_width 0.12)
+#    (mod_text_size 1 1)
+#    (mod_text_width 0.15)
+#    (pad_size 3.2 3.2)
+#    (pad_drill 3.2)
+#    (pad_to_mask_clearance 0.051)
+#    (solder_mask_min_width 0.25)
+#    (aux_axis_origin 0 0)
+#    (visible_elements FFFFFF7F)
+#    (pcbplotparams
+#      (layerselection 0x010f0_ffffffff)
+#      (usegerberextensions true)
+#      (usegerberattributes false)
+#      (usegerberadvancedattributes false)
+#      (creategerberjobfile false)
+#      (excludeedgelayer true)
+#      (linewidth 0.100000)
+#      (plotframeref false)
+#      (viasonmask false)
+#      (mode 1)
+#      (useauxorigin false)
+#      (hpglpennumber 1)
+#      (hpglpenspeed 20)
+#      (hpglpendiameter 15.000000)
+#      (psnegative false)
+#      (psa4output false)
+#      (plotreference true)
+#      (plotvalue true)
+#      (plotinvisibletext false)
+#      (padsonsilk false)
+#      (subtractmaskfromsilk false)
+#      (outputformat 1)
+#      (mirror false)
+#      (drillshape 0)
+#      (scaleselection 1)
+#      (outputdirectory "gerbers/"))
+#  )
 
