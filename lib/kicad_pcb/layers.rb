@@ -17,38 +17,39 @@ class KicadPcb
       # If we were passed a hash, use it to set some layers
       if layers_hash
         layers_hash.each do |number, layer_hash|
-          @layers[number.to_s] = Layer.new({number: layer_hash[:number], name: layer_hash[:name], type: layer_hash[:type]})
+          set_layer(layer_hash)
         end
       end
       #TODO: Make @layers be a hash indexed by layer name instead of number? Since layer names are the only reference used elsewhere, it'd make it easy to check for layer names?
     end
 
-    #TODO: Make this take a hash as input??
-    def set(number, name, type)
-      @layers[number.to_s] = Layer.new({number: number, name: name, type: type})
+    # Set a layer specified by layer_hash.
+    # layer_hash must have the following keys: :number, :name, :type
+    def set_layer(layer_hash)
+      @layers[layer_hash[:number].to_s] = Layer.new(layer_hash)
     end
 
     def set_default_layers
-      set('0', 'F.Cu', 'signal')
-      set('31', 'B.Cu', 'signal')
-      set('32', 'B.Adhes', 'user')
-      set('33', 'F.Adhes', 'user')
-      set('34', 'B.Paste', 'user')
-      set('35', 'F.Paste', 'user')
-      set('36', 'B.SilkS', 'user')
-      set('37', 'F.SilkS', 'user')
-      set('38', 'B.Mask', 'user')
-      set('39', 'F.Mask', 'user')
-      set('40', 'Dwgs.User', 'user')
-      set('41', 'Cmts.User', 'user')
-      set('42', 'Eco1.User', 'user')
-      set('43', 'Eco2.User', 'user')
-      set('44', 'Edge.Cuts', 'user')
-      set('45', 'Margin', 'user')
-      set('46', 'B.CrtYd', 'user')
-      set('47', 'F.CrtYd', 'user')
-      set('48', 'B.Fab', 'user')
-      set('49', 'F.Fab', 'user')
+      set_layer({number: '0', name: 'F.Cu', type: 'signal'})
+      set_layer({number: '31', name: 'B.Cu', type: 'signal'})
+      set_layer({number: '32', name: 'B.Adhes', type: 'user'})
+      set_layer({number: '33', name: 'F.Adhes', type: 'user'})
+      set_layer({number: '34', name: 'B.Paste', type: 'user'})
+      set_layer({number: '35', name: 'F.Paste', type: 'user'})
+      set_layer({number: '36', name: 'B.SilkS', type: 'user'})
+      set_layer({number: '37', name: 'F.SilkS', type: 'user'})
+      set_layer({number: '38', name: 'B.Mask', type: 'user'})
+      set_layer({number: '39', name: 'F.Mask', type: 'user'})
+      set_layer({number: '40', name: 'Dwgs.User', type: 'user'})
+      set_layer({number: '41', name: 'Cmts.User', type: 'user'})
+      set_layer({number: '42', name: 'Eco1.User', type: 'user'})
+      set_layer({number: '43', name: 'Eco2.User', type: 'user'})
+      set_layer({number: '44', name: 'Edge.Cuts', type: 'user'})
+      set_layer({number: '45', name: 'Margin', type: 'user'})
+      set_layer({number: '46', name: 'B.CrtYd', type: 'user'})
+      set_layer({number: '47', name: 'F.CrtYd', type: 'user'})
+      set_layer({number: '48', name: 'B.Fab', type: 'user'})
+      set_layer({number: '49', name: 'F.Fab', type: 'user'})
       self # Without this, it just returns the return from the last #set call, which is kind of weird.
     end
 
@@ -56,7 +57,6 @@ class KicadPcb
       # output the opening (layers line
       # iterate over hash of layers and do a to_sexpr on each of those
       # output closing )
-      #TODO: Make this use the methods from Render? Would require reworking how @layers is, I think?
       output = ''
       output << '(layers'
       output << "\n"
