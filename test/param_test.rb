@@ -1,5 +1,8 @@
+require 'test_helper'
 
-#TODO: test render_value for the following types of values:
+#TODO: Test the reversibility of Param
+
+#TODO: test with the following types of values:
 
 # 0 
 # 1 

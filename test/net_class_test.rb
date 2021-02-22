@@ -1,4 +1,4 @@
-
+require 'test_helper'
 
 #TODO: test that you can't add a net twice
 
