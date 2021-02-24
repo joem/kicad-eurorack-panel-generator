@@ -1,5 +1,7 @@
 require 'test_helper'
 require 'kicad_pcb/render'
+require 'bigdecimal'
+require 'bigdecimal/util'
 
 #TODO: test render_value for the following types of values:
 
@@ -45,6 +47,8 @@ describe Render do
   end
 
   #TODO: Test for decimal places when they're 0, like in 15.0000 (I'm not sure what should happen!)
+
+  #TODO: Change up some of these tests to test floats and ints!
 
   #TODO: Be more specific than 'correctly'?
   it 'correctly formats negative whole numbers' do
@@ -185,12 +189,21 @@ describe Render do
   end
 
   it "doesn't double quote an already-quoted string" do
-    # skip
     value(@test_object.send(:render_value, '"foo"')).must_equal '"foo"'
   end
 
-  #TODO: Test BigDecimals
-  
+  it 'correctly formats BigDecimals to have at least one decimal place' do
+    value(@test_object.send(:render_value, '0'.to_d)).must_equal '0.0'
+    value(@test_object.send(:render_value, '5.5'.to_d)).must_equal '5.5'
+    value(@test_object.send(:render_value, '15.00000'.to_d)).must_equal '15.0'
+    value(@test_object.send(:render_value, '15.10000'.to_d)).must_equal '15.1'
+    value(@test_object.send(:render_value, '15.01000'.to_d)).must_equal '15.01'
+    value(@test_object.send(:render_value, '15.00100'.to_d)).must_equal '15.001'
+    value(@test_object.send(:render_value, '15.00010'.to_d)).must_equal '15.0001'
+    value(@test_object.send(:render_value, '15.00001'.to_d)).must_equal '15.00001'
+    value(@test_object.send(:render_value, '97235987915.7812375'.to_d)).must_equal '97235987915.7812375' # yeeeeehaaaaw!
+  end
+
   #TODO: Test Arrays
 
   #TODO: Test Hashes
