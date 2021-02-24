@@ -2,6 +2,10 @@ require 'bigdecimal'
 require 'bigdecimal/util'
 # require_relative 'param'
 
+#NOTE: This module gets `include`'d in several other classes, so please don't
+#change or remove the method names. (Or at least not without also updating
+#everywhere that calls it.)
+
 module Render
 
   private
