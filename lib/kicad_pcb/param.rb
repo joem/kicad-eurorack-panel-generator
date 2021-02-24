@@ -19,7 +19,7 @@ class KicadPcb
 
     include Render # Render contains #indent, #render_value, #render_array, and #render_hash
 
-    def self.[](param)
+    def self.[](param = nil)
       if param.is_a? Param
         #TODO: Make this return a new clone instead of the exact same one? Can I use Marshal for that?
         param
