@@ -68,14 +68,18 @@ module Render
       elsif check_if_already_quoted(the_value)
         the_value
       elsif check_for_characters_that_need_quoting(the_value)
-        "\"#{the_value}\""
+        #NOTE: This elsif needs to be done AFTER the `elsif check_if_already_quoted` one.
+        # Double any embedded quotes and quote the whole thing
+        "\"#{the_value.gsub(/"/,'""')}\""
       elsif check_for_dash_anywhere_but_first(the_value)
         "\"#{the_value}\""
       else
         the_value
       end
     else
-      the_value # Not sure what else it might be, but I guess just use the_value?? Maybe it should raise an error?
+      the_value
+      # Not sure what else it might be, but I guess just use the_value??
+      # Maybe it should raise an error? #FIXME
     end
   end
 
@@ -92,17 +96,18 @@ module Render
   end
 
   # See if it starts and ends with quotes already
-  # If it does, see if there are any other quotes
-  #   If so, raise error
-  #   If not, return true
-  # If it doesn't, return false
   def check_if_already_quoted(the_string)
     if ((the_string[0] == '"') && (the_string[-1] == '"'))
-      if the_string[1..-2].include?('"')
-        raise "String passed to #{__callee__} has too many quotes"
-      else
-        true
-      end
+      true
+    else
+      false
+    end
+  end
+
+  # See if there are any quotes other than leading or trailing
+  def check_for_embedded_quote(the_string)
+    if the_string[1..-2].include?('"')
+      true
     else
       false
     end

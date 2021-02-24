@@ -178,14 +178,20 @@ describe Render do
     value(@test_object.send(:render_value, '*.Mask')).must_equal '*.Mask'
   end
 
-  it "doesn't quote a string with a single embedded quote" do
+  it "doesn't quote a string with embedded quotes" do
     value(@test_object.send(:render_value, 'leg"23')).must_equal 'leg"23' # example from the docs
+    value(@test_object.send(:render_value, 'foo""bar')).must_equal 'foo""bar'
   end
 
-  it 'duplicates an embedded quote if it the whole string is quoted' do
-    skip
-    #TODO: Figure out if this is even how it works
-    # value(@test_object.send(:render_value, ' leg"23 ')).must_equal '" leg""23 "' # example from the docs (kind of)
+  it 'duplicates an embedded quote if it the whole string becomes quoted' do
+    value(@test_object.send(:render_value, ' leg"23 ')).must_equal '" leg""23 "' # example from the docs (kind of)
+    value(@test_object.send(:render_value, ' foo""bar ')).must_equal '" foo""""bar "'
+  end
+
+  it "doesn't duplicate embedded quotes if the string is already quoted" do
+    value(@test_object.send(:render_value, '"foo"bar"')).must_equal '"foo"bar"'
+    value(@test_object.send(:render_value, '"foo""bar"')).must_equal '"foo""bar"'
+    value(@test_object.send(:render_value, '"foo"""bar"')).must_equal '"foo"""bar"'
   end
 
   it "doesn't double quote an already-quoted string" do
@@ -205,8 +211,14 @@ describe Render do
   end
 
   #TODO: Test Arrays
+  it 'something something Arrays' do
+    skip #FIXME
+  end
 
   #TODO: Test Hashes
+  it 'something something Hashes' do
+    skip #FIXME
+  end
 
 end
 
