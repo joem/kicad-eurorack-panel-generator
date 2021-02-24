@@ -37,10 +37,11 @@ describe KicadPcb::Param do
 
 end
 
+#TODO: Test the timestamp class methods! ensure they return Param objects. Ensure they do the timestamp stuff right?
 
-#TODO: Test the reversibility of Param
+#TODO: Test the reversibility of Param (like make a param from a string, then do a to_s, then make a param again, etc)
 
-#TODO: test with the following types of values:
+#TODO: test with the following types of values? Or is that too redundant of the Render tests?? I guess just knowing it calls Render#render_value should be enough?
 
 # 0 
 # 1 
