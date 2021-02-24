@@ -80,7 +80,7 @@ module Render
   end
 
   def check_for_characters_that_need_quoting(the_string)
-    characters_that_need_quoting = [' ', "\t", "\\t", "\n", "\\n", '(', ')', '%', '{', '}']
+    characters_that_need_quoting = [' ', "\t", "\\t", "\n", "\\n", '(', ')', '%', '{', '}', '#']
     characters_that_need_quoting.any? { |s| the_string.include? s }
   end
 
