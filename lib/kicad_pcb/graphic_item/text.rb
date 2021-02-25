@@ -1,15 +1,57 @@
+require 'forwardable'
 require_relative '../render'
+require_relative '../param'
 
 class KicadPcb
   class GraphicItem
     class Text
 
+      extend Forwardable # needed for the #def_delegators forwarding
       include Render # Render contains #indent, #render_value, #render_array, and #render_hash
 
+      attr_reader :text, :at, :layer, :tstamp, :size, :thickness, :justify
+
+      # Forward some Hash and Enumerable methods straight to the hash
+      def_delegators :to_h, :[], :each, :include?, :key?, :keys, :length, :size
+
       def initialize(text_hash)
+        @text = Param[text_hash[:text]] #TODO: Enforce this is a 2-value array
+        @at = Param[text_hash[:at]]
+        @layer = Param[text_hash[:layer]]
+        @tstamp = Param[text_hash[:tstamp]]
+        @size = Param[text_hash[:size]] #TODO: Enforce this is a 2-value array
+        @thickness = Param[text_hash[:thickness]]
+        @justify = Param[text_hash[:justify]]
       end
 
       def to_sexpr
+        optional_tstamp = ''
+        if @tstamp
+          optional_tstamp = " (tstamp #{@tstamp})"
+        end
+        optional_justify = ''
+        if @justify
+          optional_justify = " (justify #{@justify})"
+        end
+        output = ''
+        output << "(gr_text #{@text} (at #{@at}) (layer #{@layer})#{optional_tstamp}"
+        output << "\n"
+        output << "  (effects (font (size #{@size}) (thickness #{@thickness}))#{optional_justify})"
+        output << "\n"
+        output << ")"
+        return output
+      end
+
+      def to_h
+        {
+          text: @text.to_s,
+          at: @at.map(&:to_s),
+          layer: @layer.to_s,
+          tstamp: @tstamp.to_s,
+          size: @size.map(&:to_s),
+          thickness: @thickness.to_s,
+          justify: @justify.to_s
+        }
       end
 
     end
