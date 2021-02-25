@@ -27,10 +27,10 @@ class KicadPcb
 
       def to_h
         {
-          center: @center,
-          end: @end,
-          layer: @layer,
-          width: @width
+          center: @center.to_s,
+          end: @end.to_s,
+          layer: @layer.to_s,
+          width: @width.to_s
         }
       end
 
