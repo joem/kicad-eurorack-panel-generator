@@ -23,11 +23,11 @@ class KicadPcb
       end
 
       def to_sexpr
+        optional_tstamp = ''
         if @tstamp
-          "(gr_line (start #{@start}) (end #{@end}) (layer #{@layer}) (width #{@width}) (tstamp #{@tstamp}))"
-        else
-          "(gr_line (start #{@start}) (end #{@end}) (layer #{@layer}) (width #{@width}))"
+          optional_tstamp = " (tstamp #{@tstamp})"
         end
+        "(gr_line (start #{@start}) (end #{@end}) (layer #{@layer}) (width #{@width})#{optional_timestamp})"
       end
 
       def to_h
