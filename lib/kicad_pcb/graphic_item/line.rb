@@ -1,15 +1,43 @@
+require 'forwardable'
 require_relative '../render'
+require_relative '../param'
 
 class KicadPcb
   class GraphicItem
     class Line
 
+      extend Forwardable # needed for the #def_delegators forwarding
       include Render # Render contains #indent, #render_value, #render_array, and #render_hash
 
+      attr_reader :start, :end, :layer, :width, :tstamp
+
+      # Forward some Hash and Enumerable methods straight to the hash
+      def_delegators :to_h, :[], :each, :include?, :key?, :keys, :length, :size
+
       def initialize(line_hash)
+        @start = Param[line_hash[:start]] #TODO: Enforce this is a 2 value array
+        @end = Param[line_hash[:end]] #TODO: Enforce this is a 2 value array
+        @layer = Param[line_hash[:layer]]
+        @width = Param[line_hash[:width]]
+        @tstamp = Param[line_hash[:tstamp]]
       end
 
       def to_sexpr
+        if @tstamp
+          "(gr_line (start #{@start}) (end #{@end}) (layer #{@layer}) (width #{@width}) (tstamp #{@tstamp}))"
+        else
+          "(gr_line (start #{@start}) (end #{@end}) (layer #{@layer}) (width #{@width}))"
+        end
+      end
+
+      def to_h
+        {
+          start: @start.to_s,
+          end: @end.to_s,
+          layer: @layer.to_s,
+          width: @width.to_s,
+          tstamp: @tstamp.to_s
+        }
       end
 
     end
