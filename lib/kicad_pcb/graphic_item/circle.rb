@@ -27,8 +27,8 @@ class KicadPcb
 
       def to_h
         {
-          center: @center.to_s,
-          end: @end.to_s,
+          center: @center.map(&:to_s),
+          end: @end.map(&:to_s),
           layer: @layer.to_s,
           width: @width.to_s
         }

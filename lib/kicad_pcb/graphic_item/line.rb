@@ -32,8 +32,8 @@ class KicadPcb
 
       def to_h
         {
-          start: @start.to_s,
-          end: @end.to_s,
+          start: @start.map(&:to_s),
+          end: @end.map(&:to_s),
           layer: @layer.to_s,
           width: @width.to_s,
           tstamp: @tstamp.to_s
