@@ -10,6 +10,176 @@ It can also do other related tasks such as generate blank panels and tell you so
 I'm building it in parts, and right now its main use (auto generation of front panels for a pcb) doesn't work yet. That said, some of the parts I've built already might be useful, so I'll list what the files are:
 
 
+## `KicadPcb` (`lib/kicad_pcb`)
+
+This library handles all the PCB parsing and generating. It does more than the KiCad Eurorack Panel Generator needs, since once I started making it someone full of features, I just kept going.
+
+There are a lot of aspects to it...
+
+
+### `KicadPcb` (`lib/kicad_pcb.rb`)
+
+This is the main file of the library.
+
+
+### KicadPcb::Header (`kicad_pcb/header.rb`)
+
+The Header is the first part of a pcb file. It's a fairly simple part. The header has two parameters: `version` and `host_version`. If you have a custom `version` and `host_version` you can pass it to the contructor in a has. Otherwise, you can instantiate a Header object without the hash, and then later call `#set_defaults` to set the default `version` and `host_version`.
+
+Like all the objects representing part of a pcb file, Header objects have a `#to_sexpr` method that outputs the appropriate s-expression for the pcb file.
+
+
+### General
+
+This is the next part of a pcb file. **TO BE FINISHED**
+
+
+### KicadPcb::Page (`kicad_pcb/page.rb`)
+
+The next part of a PCB file is the Page. This is the simplest of all the parts, as it only has one parameter, the page size. This parameter must be passed to the constructor as an argument. If no argument is passed, the default (A4) will be used.
+
+Like all the objects representing part of a pcb file, Page objects have a `#to_sexpr` method that outputs the appropriate s-expression for the pcb file.
+
+
+### KicadPcb::Layers (`kicad_pcb/layers.rb`)
+
+The next part of a PCB file is the Layers section. This section is a list of at least one Layer. As such, the Layers object is a container that can hold one or more Layer objects. You can add a layer by calling the `#set_layer` method and passing a hash of the options for the Layer object. You can also call `#set_default_layers` in order to add all the default layers for a 2-sided PCB.
+
+Like all the objects representing part of a pcb file, Layers objects have a `#to_sexpr` method that outputs the appropriate s-expression for the pcb file.
+
+
+### KicadPcb::Layer (`kicad_pcb/layer.rb`)
+
+### KicadPcb::Setup (`kicad_pcb/setup.rb`)
+
+### KicadPcb::GraphicItems (`kicad_pcb/graphic_items.rb`)
+
+### KicadPcb::GraphicItem (`kicad_pcb/graphic_item.rb`)
+
+### KicadPcb:: (`kicad_pcb/graphic_item/`)
+
+### KicadPcb::NetClasses (`kicad_pcb/net_classes.rb`)
+
+### KicadPcb::NetClass (`kicad_pcb/net_class.rb`)
+
+### KicadPcb::Nets (`kicad_pcb/nets.rb`)
+
+### KicadPcb::Net (`kicad_pcb/net.rb`)
+
+### KicadPcb::Parts (`kicad_pcb/parts.rb`)
+
+### KicadPcb::Part (`kicad_pcb/part.rb`)
+
+### KicadPcb::Tracks (`kicad_pcb/tracks.rb`)
+
+### KicadPcb::Track (`kicad_pcb/track.rb`)
+
+### KicadPcb:: (`kicad_pcb/track/`)
+
+### KicadPcb::Zones (`kicad_pcb/zones.rb`)
+
+### KicadPcb::Zone (`kicad_pcb/zone.rb`)
+
+
+
+That concludes all the parts of a PCB file. The remaining classes are a bit different:
+
+
+### KicadPcb::Param (`kicad_pcb/param.rb`)
+
+This is a convenience class designed to be used for instance variables, so that in `#to_sexpr` you can just use string interpolation and it'll get formatted/rendered correctly, since string interpolation calls `#to_s` on the objects.
+
+Calling `#render_value` on a Param object will simply call the Param's `#to_s` method, which will `#render_value` it's param. (I'm pretty sure I'm doing it correctly so it's all safe!)
+
+Additionally, when in a KicadPcb class that's `require`'d this class, you can quickly create a new Param like so:
+
+      @some_variable = Param["some value"]
+
+Most of the KicadPcb classes instantiate values into Param objects upon object creation.
+
+The Param class also has two useful class methods:
+
+`Param#current_timestamp` returns a timestamp of the current date/time in the format used by pcb files, as a Param object.
+
+`Param#timestamp(time_or_datetime)`. returns a timestamp of provided date/time in the format used by pcb files, as a Param object.
+
+
+### Render (`kicad_pcb/render.rb`)
+
+The Render module is `include`'d into most of the KicadPcb classes in order to provide the `#render_array`, `#render_hash`, and `#render_value` methods.
+
+
+### KicadPcb::Parser (`kicad_pcb/parser.rb`)
+
+### KicadPcb::Pcb (`kicad_pcb/pcb.rb`)
+
+### KicadPcb:: (`kicad_pcb/writer.rb`)
+
+### KicadPcb:: (`kicad_pcb/version.rb`)
+
+This merely holds the KicadPcb::VERSION constant.
+
+
+
+
+
+
+
+
+
+
+## Requirements
+
+So far, this uses no external libraries, so it just need Ruby.
+
+This was developed on a computer that had Ruby 2.4.1p111, so it should run on that version or any newer version (of which there are many). It will probably also run on older Ruby versions too, but if you go older than 2.0 you're asking for trouble.
+
+I'll hopefully test it on more versions just to make sure.
+
+
+## How To Use
+
+1. Clone the repo or download and unzip the repo.
+2. From the command line, run `ruby <name of file> -- help` to see the options. Available programs:
+    - `ruby generate_panel.rb --help`
+    - `ruby generate_panel_from_pcb.rb --help`
+    - `ruby generate_pcb.rb --help`
+    - `ruby kicad_eurorack_panel_generator.rb --help`
+    - `ruby show_pcb_info.rb --help`
+3. Run the desired program as above, but without the `--help` option and with the appropriate options for what you want to accomplish.
+
+
+## References
+
+Primary reference for eurorack 3U panel sizes:
+http://www.doepfer.de/a100_man/a100m_e.htm
+
+Reference for eurorack 3U pcb sizes and additional reference for eurorack 3U sizes:
+https://sdiy.info/wiki/Eurorack_DIY_parts
+
+Reference for Intellijel 1U pcb/panel sizes:
+https://intellijel.com/support/1u-technical-specifications/
+
+Reference for Pulp Logic 1U pcb/panel sizes:
+http://pulplogic.com/1u_tiles/
+
+Reference for KiCad file format: https://kicad.org/help/file-formats/ -- specifically the link to the [legacy PDF documentation](https://kicad.org/help/legacy_file_format_documentation.pdf) (but the documentation isn't great, so I mostly just made test pcb files in kicad and then made sense of the output)
+
+
+
+
+
+
+
+---------------------------
+
+---------------------------
+
+---------------------------
+
+# The below is old, and most of it is gone or changed:
+
+
 ## `kicad_eurorack_panel_generator.rb`
 
 This will be the main program. Right now it's just a placeholder file.
@@ -94,44 +264,4 @@ This module should be merged with the KicadPcb module eventually.
 ## `lib/sexpr_parser.rb`
 
 This is a simple s-expression parser that helps with reading KiCad's pcb files.
-
-
-## Requirements
-
-So far, this uses no external libraries, so it just need Ruby.
-
-This was developed on a computer that had Ruby 2.4.1p111, so it should run on that version or any newer version (of which there are many). It will probably also run on older Ruby versions too, but if you go older than 2.0 you're asking for trouble.
-
-I'll hopefully test it on more versions just to make sure.
-
-
-## How To Use
-
-1. Clone the repo or download and unzip the repo.
-2. From the command line, run `ruby <name of file> -- help` to see the options. Available programs:
-    - `ruby generate_panel.rb --help`
-    - `ruby generate_panel_from_pcb.rb --help`
-    - `ruby generate_pcb.rb --help`
-    - `ruby kicad_eurorack_panel_generator.rb --help`
-    - `ruby show_pcb_info.rb --help`
-3. Run the desired program as above, but without the `--help` option and with the appropriate options for what you want to accomplish.
-
-
-## References
-
-Primary reference for eurorack 3U panel sizes:
-http://www.doepfer.de/a100_man/a100m_e.htm
-
-Reference for eurorack 3U pcb sizes and additional reference for eurorack 3U sizes:
-https://sdiy.info/wiki/Eurorack_DIY_parts
-
-Reference for Intellijel 1U pcb/panel sizes:
-https://intellijel.com/support/1u-technical-specifications/
-
-Reference for Pulp Logic 1U pcb/panel sizes:
-http://pulplogic.com/1u_tiles/
-
-Reference for KiCad file format: https://kicad.org/help/file-formats/ -- specifically the link to the [legacy PDF documentation](https://kicad.org/help/legacy_file_format_documentation.pdf) (but the documentation isn't great, so I mostly just made test pcb files in kicad and then made sense of the output)
-
-
 
