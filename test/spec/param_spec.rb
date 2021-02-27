@@ -43,6 +43,30 @@ describe KicadPcb::Param do
     skip #FIXME
   end
 
+  it 'tells you if the param is nil with #nil?' do
+    value(Param[nil].nil?).must_equal true
+    value(Param[].nil?).must_equal true
+    value(Param[''].nil?).wont_equal true
+  end
+
+  it 'tells you if the param is not nil with #not_nil?' do
+    value(Param[nil].not_nil?).must_equal false
+    value(Param[].not_nil?).must_equal false
+    value(Param[''].not_nil?).must_equal true
+    value(Param[123].not_nil?).must_equal true
+    value(Param['foo'].not_nil?).must_equal true
+    value(Param['foo bar'].not_nil?).must_equal true
+  end
+
+  it 'tells you if the param is present with #present?' do
+    value(Param[nil].present?).must_equal false
+    value(Param[].present?).must_equal false
+    value(Param[''].present?).must_equal true
+    value(Param[123].present?).must_equal true
+    value(Param['foo'].present?).must_equal true
+    value(Param['foo bar'].present?).must_equal true
+  end
+
 end
 
 #TODO: Test the timestamp class methods! ensure they return Param objects. Ensure they do the timestamp stuff right?
