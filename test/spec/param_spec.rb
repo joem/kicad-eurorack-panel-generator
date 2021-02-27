@@ -27,6 +27,14 @@ describe KicadPcb::Param do
     skip #FIXME
   end
 
+  it 'calls renders the value when in string interpolation' do
+    value("foo #{Param[1]} bar").must_equal 'foo 1 bar'
+    value("foo #{Param["hello"]} bar").must_equal 'foo hello bar'
+    value("foo #{Param["one two"]} bar").must_equal 'foo "one two" bar'
+    value("foo #{Param[]} bar").must_equal 'foo  bar'
+    value("foo #{Param[nil]} bar").must_equal 'foo  bar'
+  end
+
   it 'returns the stored param when #raw is called' do
     skip #FIXME
   end

@@ -63,6 +63,8 @@ module Render
       the_value.to_s
     elsif the_value.is_a?(Integer)
       the_value.to_s
+    elsif the_value.is_a?(NilClass)
+      ''
     elsif the_value.is_a?(String)
       # Convert \n and \t to \\n and \\t -- and don't double-convert it
       the_value = the_value.gsub(/\n/, '\\n')

@@ -13,6 +13,8 @@ require_relative 'render'
 # Additionally, when in a KicadPcb class that's require'd this class, you can
 # quickly create a new Param like so:
 #   @some_variable = Param["some value"]
+#
+# Note: If the param is nil, that means it's not set. This will return an empty string when #to_s is called on it, but it should not always be treated the same as an empty string. As such there are a few method to help determine this: #nil?, #not_nil?, and present?. #nil? and #not_nil? are self-explanatory, but it #present? should be explained. In this case, #present? is the same thing as #not_nil?, which is slightly different behavior than Rails' #present? since that one returns false if the value checked is nil _or_ false. In our case false is a valid value, so only nil yields false for us.
 
 class KicadPcb
   class Param
@@ -55,6 +57,22 @@ class KicadPcb
 
     def raw
       @param
+    end
+
+    def nil?
+      @param == nil
+    end
+
+    def not_nil?
+      !nil?
+    end
+
+    # NOTE : This is a little different from Rails' #present? method. This one
+    # is only true if the param is not nil. If it's false, it's still present,
+    # since that's a valid value to output.
+    #
+    def present?
+      not_nil?
     end
 
     def set(param)

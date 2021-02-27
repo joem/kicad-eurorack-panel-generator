@@ -145,8 +145,8 @@ describe Render do
     value(@test_object.send(:render_value, "")).must_equal '""' # super redundant, but I wanted to make it clear
   end
 
-  it "doesn't turn nil into an empty string" do
-    value(@test_object.send(:render_value, nil)).must_be_nil
+  it "renders nil as an empty string" do
+    value(@test_object.send(:render_value, nil)).must_equal ''
     value(@test_object.send(:render_value, nil)).wont_equal '""'
   end
 
