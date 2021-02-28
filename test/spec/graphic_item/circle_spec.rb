@@ -28,7 +28,14 @@ describe KicadPcb::GraphicItem::Circle do
     value(Circle.new(params1).to_sexpr).must_equal expected_sexpr
   end
 
-  #TODO: Test reversibility... make a new, do a to_h, then make a new from it and see if the same (or compare to_h?)
+  it "can make an equivalent Circle with another Circle's #to_h" do
+    orig_params = {center:['46.736','94.615'], end:['47.879','96.012'],layer:'Dwgs.User',width:'0.15'}
+    orig = Circle.new(orig_params)
+    new = Circle.new(orig.to_h)
+    value(orig.to_h).must_equal orig_params
+    value(new.to_h).must_equal orig.to_h
+    value(new.to_sexpr).must_equal orig.to_sexpr
+  end
 
 end
 
