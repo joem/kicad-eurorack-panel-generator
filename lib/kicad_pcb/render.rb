@@ -27,7 +27,7 @@ module Render
     the_array.each do |item|
       string_array << render_value(item)
     end
-    return string_array.join(" ")
+    return string_array.join(" ").strip
   end
 
   def render_hash(the_hash)
@@ -59,10 +59,8 @@ module Render
     # elsif the_value.is_a?(BigDecimal)
     if the_value.is_a?(BigDecimal)
       the_value.to_s("F")
-    elsif the_value.is_a?(Float)
-      the_value.to_s
-    elsif the_value.is_a?(Integer)
-      the_value.to_s
+    elsif the_value.is_a? Array
+      render_array(the_value)
     elsif the_value.is_a?(NilClass)
       ''
     elsif the_value.is_a?(String)
@@ -83,9 +81,8 @@ module Render
         the_value
       end
     else
-      the_value
-      # Not sure what else it might be, but I guess just use the_value??
-      # Maybe it should raise an error? #FIXME
+      the_value.to_s # By default, do a #to_s on the_value in order to render.
+      # This replaces specific clauses for Float, Integer, Symbol, Param
     end
   end
 

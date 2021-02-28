@@ -20,11 +20,11 @@ describe KicadPcb::Param do
   end
 
   it 'calls Render#render_value on the stored param when #render is called' do
-    skip #FIXME
+    skip('Test not implemented yet.') #FIXME
   end
 
   it 'calls Render#render_value on the stored param when #to_s is called' do
-    skip #FIXME
+    skip('Test not implemented yet.') #FIXME
   end
 
   it 'calls renders the value when in string interpolation' do
@@ -36,11 +36,11 @@ describe KicadPcb::Param do
   end
 
   it 'returns the stored param when #raw is called' do
-    skip #FIXME
+    skip('Test not implemented yet.') #FIXME
   end
 
   it 'updates the stored param via #set(new_param)' do
-    skip #FIXME
+    skip('Test not implemented yet.') #FIXME
   end
 
   it 'tells you if the param is nil with #nil?' do
@@ -65,6 +65,56 @@ describe KicadPcb::Param do
     value(Param[123].present?).must_equal true
     value(Param['foo'].present?).must_equal true
     value(Param['foo bar'].present?).must_equal true
+  end
+
+  it 'returns an Array when #to_a is called' do
+    value(Param[].to_a).must_be_instance_of Array
+    value(Param[1].to_a).must_be_instance_of Array
+    value(Param['foobar'].to_a).must_be_instance_of Array
+    value(Param[['foo', 'bar']].to_a).must_be_instance_of Array
+  end
+
+  it "returns a one-element Array when param isn't an array and #to_a is called" do
+    value(Param[].to_a.size).must_equal 1
+    value(Param[1].to_a.size).must_equal 1
+    value(Param['foobar'].to_a.size).must_equal 1
+  end
+
+  it 'returns the param array when param is an Array and #to_a is called' do
+    value(Param[['foo', 'bar']].to_a).must_equal ['foo', 'bar']
+    value(Param[['foo', 'bar', 'baz']].to_a).must_equal ['foo', 'bar', 'baz']
+    # value(Param[['foo', ['bar', 'baz']]].to_a).must_equal ['foo', ['bar', 'baz']] # Actually returns ["foo", "[\"bar\", \"baz\"]"] ???
+  end
+
+  it 'performs #to_s on all array elements when param is an Array and #to_a is called' do
+    value(Param[['foo', 'bar']].to_a).must_equal ['foo', 'bar']
+    value(Param[[:foo, :bar]].to_a).must_equal ['foo', 'bar']
+    value(Param[[2, 4, 8]].to_a).must_equal ['2', '4', '8']
+    value(Param[[Param[2], Param['foo'], Param[:bar], :baz]].to_a).must_equal ['2', 'foo', 'bar', 'baz']
+  end
+
+
+  describe '#current_timestamp' do
+    #TODO: Write some tests!!!
+    it 'does something' do
+      skip('Test not implemented yet.') #FIXME
+    end
+  end
+
+
+  describe '#current_tstamp' do
+    #TODO: Write some tests!!!
+    it 'does something' do
+      skip('Test not implemented yet.') #FIXME
+    end
+  end
+
+
+  describe '#timestamp' do
+    #TODO: Write some tests!!!
+    it 'does something' do
+      skip('Test not implemented yet.') #FIXME
+    end
   end
 
 end

@@ -24,7 +24,7 @@ class KicadPcb
     def self.[](param = nil)
       if param.is_a? Param
         #TODO: Make this return a new clone instead of the exact same one? Can I use Marshal for that?
-        param
+        param.dup
       else
         Param.new param
       end
@@ -81,6 +81,14 @@ class KicadPcb
 
     def render
       render_value @param
+    end
+
+    def to_a
+      if @param.is_a? Array
+        @param.to_a.map(&:to_s)
+      else
+        [render]
+      end
     end
 
     def to_s
