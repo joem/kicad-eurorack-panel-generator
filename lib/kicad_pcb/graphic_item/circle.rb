@@ -14,9 +14,19 @@ class KicadPcb
       # Forward some Hash and Enumerable methods straight to the hash
       def_delegators :to_h, :[], :each, :include?, :key?, :keys, :length, :size
 
-      def initialize(circle_hash)
-        @center = Param[circle_hash[:center]] #TODO: Enforce this is a 2 value array
-        @end = Param[circle_hash[:end]] #TODO: Enforce this is a 2 value array
+      def initialize(circle_hash = {})
+        if circle_hash[:center]
+          @center = Param[circle_hash[:center]]
+        else
+          @center = Param[[nil,nil]]
+        end
+
+        if circle_hash[:end]
+          @end = Param[circle_hash[:end]]
+        else
+          @end = Param[[nil,nil]]
+        end
+
         @layer = Param[circle_hash[:layer]]
         @width = Param[circle_hash[:width]]
       end
@@ -27,8 +37,8 @@ class KicadPcb
 
       def to_h
         {
-          center: @center.map(&:to_s),
-          end: @end.map(&:to_s),
+          center: @center.to_a,
+          end: @end.to_a,
           layer: @layer.to_s,
           width: @width.to_s
         }
