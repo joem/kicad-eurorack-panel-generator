@@ -30,6 +30,15 @@ class KicadPcb
       end
     end
 
+    # Ensure that if it's empty it won't be double-quoted
+    def self.ensure_really_empty_if_empty(input)
+      if input.to_s.empty?
+        Param[]
+      else
+        Param[input.to_s] # the #to_s might be unnecessary if it's just to guard against double-Param'ing?
+      end
+    end
+
     # Convert from a ruby time or datetime object to a kicad tstamp string
     # (kicad tstamp is seconds since unix epoch in hexadecimal)
     def self.timestamp(time_or_datetime_object)
