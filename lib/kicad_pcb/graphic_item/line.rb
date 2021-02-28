@@ -14,26 +14,39 @@ class KicadPcb
       # Forward some Hash and Enumerable methods straight to the hash
       def_delegators :to_h, :[], :each, :include?, :key?, :keys, :length, :size
 
-      def initialize(line_hash)
-        @start = Param[line_hash[:start]] #TODO: Enforce this is a 2 value array
-        @end = Param[line_hash[:end]] #TODO: Enforce this is a 2 value array
+      def initialize(line_hash = {})
+        if line_hash[:start]
+          @start = Param[line_hash[:start]]
+        else
+          @start = Param[[nil,nil]]
+        end
+        if line_hash[:end]
+          @end = Param[line_hash[:end]]
+        else
+          @end = Param[[nil,nil]]
+        end
         @layer = Param[line_hash[:layer]]
         @width = Param[line_hash[:width]]
-        @tstamp = Param[line_hash[:tstamp]]
+        # This ensures that passing some sort of empty timestamp doesn't result in double-quoting an empty string:
+        if line_hash[:tstamp].to_s.empty?
+          @tstamp = Param[]
+        else
+          @tstamp = Param[line_hash[:tstamp].to_s]
+        end
       end
 
       def to_sexpr
         optional_tstamp = ''
-        if @tstamp
+        unless @tstamp.to_s.empty?
           optional_tstamp = " (tstamp #{@tstamp})"
         end
-        "(gr_line (start #{@start}) (end #{@end}) (layer #{@layer}) (width #{@width})#{optional_timestamp})"
+        "(gr_line (start #{@start}) (end #{@end}) (layer #{@layer}) (width #{@width})#{optional_tstamp})"
       end
 
       def to_h
         {
-          start: @start.map(&:to_s),
-          end: @end.map(&:to_s),
+          start: @start.to_a,
+          end: @end.to_a,
           layer: @layer.to_s,
           width: @width.to_s,
           tstamp: @tstamp.to_s
