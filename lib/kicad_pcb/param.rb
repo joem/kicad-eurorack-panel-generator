@@ -31,7 +31,7 @@ class KicadPcb
     end
 
     # Ensure that if it's empty it won't be double-quoted
-    def self.ensure_really_empty_if_empty(input)
+    def self.new_and_ensure_really_empty_if_empty(input)
       if (input.respond_to? :empty) && input.empty?
         Param[]
       elsif input.to_s.empty?

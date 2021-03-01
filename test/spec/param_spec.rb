@@ -94,36 +94,36 @@ describe KicadPcb::Param do
   end
 
 
-  describe '#ensure_really_empty_if_empty' do
+  describe '#new_and_ensure_really_empty_if_empty' do
     it 'returns a Param' do
-      value(Param.ensure_really_empty_if_empty(nil)).must_be_instance_of Param
-      value(Param.ensure_really_empty_if_empty(1)).must_be_instance_of Param
-      value(Param.ensure_really_empty_if_empty('')).must_be_instance_of Param
-      value(Param.ensure_really_empty_if_empty('foo')).must_be_instance_of Param
-      value(Param.ensure_really_empty_if_empty(Param['bar'])).must_be_instance_of Param
+      value(Param.new_and_ensure_really_empty_if_empty(nil)).must_be_instance_of Param
+      value(Param.new_and_ensure_really_empty_if_empty(1)).must_be_instance_of Param
+      value(Param.new_and_ensure_really_empty_if_empty('')).must_be_instance_of Param
+      value(Param.new_and_ensure_really_empty_if_empty('foo')).must_be_instance_of Param
+      value(Param.new_and_ensure_really_empty_if_empty(Param['bar'])).must_be_instance_of Param
     end
     it 'returns an empty Param if instantiated with an empty input' do
-      value(Param.ensure_really_empty_if_empty(nil).empty?).must_equal true
-      value(Param.ensure_really_empty_if_empty('').empty?).must_equal true
-      value(Param.ensure_really_empty_if_empty([]).empty?).must_equal true
-      value(Param.ensure_really_empty_if_empty(Array.new).empty?).must_equal true
-      value(Param.ensure_really_empty_if_empty({}).empty?).must_equal true
-      value(Param.ensure_really_empty_if_empty(Hash.new).empty?).must_equal true
+      value(Param.new_and_ensure_really_empty_if_empty(nil).empty?).must_equal true
+      value(Param.new_and_ensure_really_empty_if_empty('').empty?).must_equal true
+      value(Param.new_and_ensure_really_empty_if_empty([]).empty?).must_equal true
+      value(Param.new_and_ensure_really_empty_if_empty(Array.new).empty?).must_equal true
+      value(Param.new_and_ensure_really_empty_if_empty({}).empty?).must_equal true
+      value(Param.new_and_ensure_really_empty_if_empty(Hash.new).empty?).must_equal true
     end
     it 'renders to an empty string if instantiated with an empty input' do
-      value(Param.ensure_really_empty_if_empty(nil).to_s).must_equal ''
-      value(Param.ensure_really_empty_if_empty('').to_s).must_equal ''
-      value(Param.ensure_really_empty_if_empty([]).to_s).must_equal ''
-      value(Param.ensure_really_empty_if_empty(Array.new).to_s).must_equal ''
-      # value(Param.ensure_really_empty_if_empty({}).to_s).must_equal '' #FIXME: Why don't these pass???
-      # value(Param.ensure_really_empty_if_empty(Hash.new).to_s).must_equal '' #FIXME: Why don't these pass???
+      value(Param.new_and_ensure_really_empty_if_empty(nil).to_s).must_equal ''
+      value(Param.new_and_ensure_really_empty_if_empty('').to_s).must_equal ''
+      value(Param.new_and_ensure_really_empty_if_empty([]).to_s).must_equal ''
+      value(Param.new_and_ensure_really_empty_if_empty(Array.new).to_s).must_equal ''
+      # value(Param.new_and_ensure_really_empty_if_empty({}).to_s).must_equal '' #FIXME: Why don't these pass???
+      # value(Param.new_and_ensure_really_empty_if_empty(Hash.new).to_s).must_equal '' #FIXME: Why don't these pass???
     end
     it 'returns a non-empty Param if instantiated with an non-mepty input' do
-      value(Param.ensure_really_empty_if_empty('foo').empty?).must_equal false
-      value(Param.ensure_really_empty_if_empty(' ').empty?).must_equal false
-      value(Param.ensure_really_empty_if_empty([1]).empty?).must_equal false
-      value(Param.ensure_really_empty_if_empty(2).empty?).must_equal false
-      value(Param.ensure_really_empty_if_empty(0).empty?).must_equal false
+      value(Param.new_and_ensure_really_empty_if_empty('foo').empty?).must_equal false
+      value(Param.new_and_ensure_really_empty_if_empty(' ').empty?).must_equal false
+      value(Param.new_and_ensure_really_empty_if_empty([1]).empty?).must_equal false
+      value(Param.new_and_ensure_really_empty_if_empty(2).empty?).must_equal false
+      value(Param.new_and_ensure_really_empty_if_empty(0).empty?).must_equal false
     end
   end
 
