@@ -15,24 +15,11 @@ class KicadPcb
       def_delegators :to_h, :[], :each, :include?, :key?, :keys, :length, :size
 
       def initialize(line_hash = {})
-        if line_hash[:start]
-          @start = Param[line_hash[:start]]
-        else
-          @start = Param[[nil,nil]]
-        end
-        if line_hash[:end]
-          @end = Param[line_hash[:end]]
-        else
-          @end = Param[[nil,nil]]
-        end
+        @start = Param[line_hash[:start] || [nil,nil]] # Ensure it'll be an array if nothing was passed to it
+        @end = Param[line_hash[:end] || [nil,nil]] # Ensure it'll be an array if nothing was passed to it
         @layer = Param[line_hash[:layer]]
         @width = Param[line_hash[:width]]
-        # This ensures that passing some sort of empty timestamp doesn't result in double-quoting an empty string:
-        if line_hash[:tstamp].to_s.empty?
-          @tstamp = Param[]
-        else
-          @tstamp = Param[line_hash[:tstamp].to_s]
-        end
+        @tstamp = Param.new_and_ensure_really_empty_if_empty(line_hash[:tstamp])
       end
 
       def to_sexpr
