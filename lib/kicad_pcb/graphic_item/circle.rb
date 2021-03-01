@@ -9,7 +9,7 @@ class KicadPcb
       extend Forwardable # needed for the #def_delegators forwarding
       include Render # Render contains #indent, #render_value, #render_array, and #render_hash
 
-      attr_reader :center, :end, :layer, :width
+      attr_reader :center, :end, :layer, :width, :graphic_item_type
 
       # Forward some Hash and Enumerable methods straight to the hash
       def_delegators :to_h, :[], :each, :include?, :key?, :keys, :length, :size
@@ -19,6 +19,7 @@ class KicadPcb
         @end = Param[circle_hash[:end] || [nil,nil]] # Ensure it'll be an array if nothing was passed to it
         @layer = Param[circle_hash[:layer]]
         @width = Param[circle_hash[:width]]
+        @graphic_item_type = circle_hash[:graphic_item_type] # Not a param that needs rendering, so don't make it a Param
       end
 
       def to_sexpr
@@ -27,6 +28,7 @@ class KicadPcb
 
       def to_h
         {
+          graphic_item_type: @graphic_item_type, # no need to do #to_s on this
           center: @center.to_a,
           end: @end.to_a,
           layer: @layer.to_s,

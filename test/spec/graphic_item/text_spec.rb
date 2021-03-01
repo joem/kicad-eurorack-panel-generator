@@ -13,17 +13,22 @@ describe KicadPcb::GraphicItem::Text do
   end
 
   it 'generates the correct hash with #to_h' do
-    value(Text.new.to_h).must_equal Hash[text: '', at: ['', '', ''], layer: '', tstamp: '', size: ['', ''], thickness: '', justify: '']
+    value(Text.new.to_h).must_equal Hash[graphic_item_type: nil, text: '', at: ['', '', ''], layer: '', tstamp: '', size: ['', ''], thickness: '', justify: '']
 
     params1 = {text: 'INDEX', at: ['42.164', '90.17'], layer: 'F.SilkS', tstamp: '60004E1D', size: ['1', '1'], thickness: '0.15'}
-    expected_hash1 = {text: 'INDEX', at: ['42.164', '90.17'], layer: 'F.SilkS', tstamp: '60004E1D', size: ['1', '1'], thickness: '0.15', justify: ''}
+    expected_hash1 = {graphic_item_type: nil, text: 'INDEX', at: ['42.164', '90.17'], layer: 'F.SilkS', tstamp: '60004E1D', size: ['1', '1'], thickness: '0.15', justify: ''}
     value(Text.new(params1).to_h).must_equal expected_hash1
 
     params2 = {text: 'LLAWN.com', at: ['39.624', '89.408', '90'], layer: 'B.SilkS', size: ['2', '2'], thickness: '0.3', justify: 'mirror'}
-    expected_hash2 = {text: 'LLAWN.com', at: ['39.624', '89.408', '90'], layer: 'B.SilkS', tstamp: '', size: ['2', '2'], thickness: '0.3', justify: 'mirror'}
+    expected_hash2 = {graphic_item_type: nil, text: 'LLAWN.com', at: ['39.624', '89.408', '90'], layer: 'B.SilkS', tstamp: '', size: ['2', '2'], thickness: '0.3', justify: 'mirror'}
     value(Text.new(params2).to_h).must_equal expected_hash2
   end
 
+  it 'passes :graphic_item_type through to #to_h unchanged' do
+    value(Text.new({graphic_item_type: nil}).to_h[:graphic_item_type]).must_be_nil
+    value(Text.new({graphic_item_type: :text}).to_h[:graphic_item_type]).must_equal :text
+    value(Text.new({graphic_item_type: 'text'}).to_h[:graphic_item_type]).must_equal 'text'
+  end
 
   it 'generates the correct s-expression with #to_sexpr' do
     value(Text.new.to_sexpr).must_equal "(gr_text  (at ) (layer )\n  (effects (font (size ) (thickness )))\n)"

@@ -13,15 +13,20 @@ describe KicadPcb::GraphicItem::Line do
   end
 
   it 'generates the correct hash with #to_h' do
-    value(Line.new.to_h).must_equal Hash[start: ['', ''], end: ['', ''], layer: '', width: '', tstamp: '']
+    value(Line.new.to_h).must_equal Hash[graphic_item_type: nil, start: ['', ''], end: ['', ''], layer: '', width: '', tstamp: '']
     params1 = {start: ['23.114', '57.658'], end: ['73.66', '57.658'], layer: 'Dwgs.User', width: '0.15', tstamp: '6000FF7D'}
-    expected_hash1 = Hash[start: ['23.114', '57.658'], end: ['73.66', '57.658'], layer: 'Dwgs.User', width: '0.15', tstamp: '6000FF7D']
+    expected_hash1 = {graphic_item_type: nil, start: ['23.114', '57.658'], end: ['73.66', '57.658'], layer: 'Dwgs.User', width: '0.15', tstamp: '6000FF7D'}
     value(Line.new(params1).to_h).must_equal expected_hash1 # In this case, param1 = expected_hash1, but it's not always that case.
     params2 = {start: ['35.306', '69.088'], end: ['35.306', '63.754'], layer: 'B.SilkS', width: '0.12'}
-    expected_hash2 = Hash[start: ['35.306', '69.088'], end: ['35.306', '63.754'], layer: 'B.SilkS', width: '0.12', :tstamp=>'']
+    expected_hash2 = {graphic_item_type: nil, start: ['35.306', '69.088'], end: ['35.306', '63.754'], layer: 'B.SilkS', width: '0.12', :tstamp=>''}
     value(Line.new(params2).to_h).must_equal expected_hash2
   end
 
+  it 'passes :graphic_item_type through to #to_h unchanged' do
+    value(Line.new({graphic_item_type: nil}).to_h[:graphic_item_type]).must_be_nil
+    value(Line.new({graphic_item_type: :text}).to_h[:graphic_item_type]).must_equal :text
+    value(Line.new({graphic_item_type: 'text'}).to_h[:graphic_item_type]).must_equal 'text'
+  end
 
   it 'generates the correct s-expression with #to_sexpr' do
     value(Line.new.to_sexpr).must_equal '(gr_line (start ) (end ) (layer ) (width ))'
