@@ -32,10 +32,12 @@ class KicadPcb
 
     # Ensure that if it's empty it won't be double-quoted
     def self.ensure_really_empty_if_empty(input)
-      if input.to_s.empty?
+      if (input.respond_to? :empty) && input.empty?
+        Param[]
+      elsif input.to_s.empty?
         Param[]
       else
-        Param[input.to_s] # the #to_s might be unnecessary if it's just to guard against double-Param'ing?
+        Param[input]
       end
     end
 
@@ -66,6 +68,14 @@ class KicadPcb
 
     def raw
       @param
+    end
+
+    def empty?
+      if @param.respond_to? :empty?
+        @param.empty?
+      else
+        @param.to_s.empty?
+      end
     end
 
     def nil?
