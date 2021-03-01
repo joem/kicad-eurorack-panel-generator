@@ -14,23 +14,23 @@ class KicadPcb
       # Forward some Hash and Enumerable methods straight to the hash
       def_delegators :to_h, :[], :each, :include?, :key?, :keys, :length, :size
 
-      def initialize(text_hash)
-        @text = Param[text_hash[:text]] #TODO: Enforce this is a 2-value array
-        @at = Param[text_hash[:at]]
+      def initialize(text_hash = {})
+        @text = Param[text_hash[:text]]
+        @at = Param[text_hash[:at] || [nil,nil,nil]] # Ensure it'll be an array if nothing was passed to it
         @layer = Param[text_hash[:layer]]
-        @tstamp = Param[text_hash[:tstamp]]
-        @size = Param[text_hash[:size]] #TODO: Enforce this is a 2-value array
+        @tstamp = Param.new_and_ensure_really_empty_if_empty(text_hash[:tstamp])
+        @size = Param[text_hash[:size] || [nil,nil]] # Ensure it'll be an array if nothing was passed to it
         @thickness = Param[text_hash[:thickness]]
-        @justify = Param[text_hash[:justify]]
+        @justify = Param.new_and_ensure_really_empty_if_empty(text_hash[:justify])
       end
 
       def to_sexpr
         optional_tstamp = ''
-        if @tstamp
+        unless @tstamp.to_s.empty?
           optional_tstamp = " (tstamp #{@tstamp})"
         end
         optional_justify = ''
-        if @justify
+        unless @justify.to_s.empty?
           optional_justify = " (justify #{@justify})"
         end
         output = ''
@@ -45,10 +45,10 @@ class KicadPcb
       def to_h
         {
           text: @text.to_s,
-          at: @at.map(&:to_s),
+          at: @at.to_a,
           layer: @layer.to_s,
           tstamp: @tstamp.to_s,
-          size: @size.map(&:to_s),
+          size: @size.to_a,
           thickness: @thickness.to_s,
           justify: @justify.to_s
         }
