@@ -15,18 +15,8 @@ class KicadPcb
       def_delegators :to_h, :[], :each, :include?, :key?, :keys, :length, :size
 
       def initialize(circle_hash = {})
-        if circle_hash[:center]
-          @center = Param[circle_hash[:center]]
-        else
-          @center = Param[[nil,nil]]
-        end
-
-        if circle_hash[:end]
-          @end = Param[circle_hash[:end]]
-        else
-          @end = Param[[nil,nil]]
-        end
-
+        @center = Param[circle_hash[:center] || [nil,nil]] # Ensure it'll be an array if nothing was passed to it
+        @end = Param[circle_hash[:end] || [nil,nil]] # Ensure it'll be an array if nothing was passed to it
         @layer = Param[circle_hash[:layer]]
         @width = Param[circle_hash[:width]]
       end
