@@ -20,13 +20,15 @@ class KicadPcb
         Arc.new(graphic_item_hash)
       elsif graphic_item_hash[:graphic_item_type].to_s == 'circle'
         Circle.new(graphic_item_hash)
+      else
+        raise ArgumentError, 'valid graphic_item_type not specified in hash'
       end #TODO: Should there be an `else`?
     end
 
-    # def initialize
+    # def initialize # Should never be used for this object.
     # end
 
-    # def to_sexpr
+    # def to_sexpr # Should never be used for this object.
     # end
 
   end
