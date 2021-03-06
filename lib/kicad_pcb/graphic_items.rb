@@ -20,9 +20,14 @@ class KicadPcb
     def initialize(graphic_items_hash = {})
       @graphic_items = []
       # If we were passed a hash, use it to set some graphic items
+      # if graphic_items_hash
+      #   graphic_items_hash.sort.each do |graphic_item_hash|
+      #     add_graphic_item(graphic_item_hash)
+      #   end
+      # end
       if graphic_items_hash
-        graphic_items_hash.sort.each do |graphic_item_hash|
-          add_graphic_item(graphic_item_hash)
+        graphic_items_hash.keys.sort.each do |index|
+          add_graphic_item(graphic_items_hash[index])
         end
       end
     end

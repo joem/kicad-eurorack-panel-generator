@@ -13,6 +13,28 @@ describe KicadPcb::GraphicItems do
     value(@graphic_items).must_be_instance_of GraphicItems
   end
 
+  it 'instantiates correctly when passed a valid hash' do
+    graphic_item1 = {graphic_item_type: 'circle', center: ["46.736", "94.615"], end: ["47.879", "96.012"], layer: "Dwgs.User", width: "0.15"}
+    graphic_item2 = {graphic_item_type: 'line', start: ['23.114', '57.658'], end: ['73.66', '57.658'], layer: 'Dwgs.User', width: '0.15', tstamp: '6000FF7D'}
+    graphic_item3 = {graphic_item_type: 'text', text: 'INDEX', at: ['42.164', '90.17'], layer: 'F.SilkS', tstamp: '60004E1D', size: ['1', '1'], thickness: '0.15'}
+    input_hash = {0 => graphic_item1, 1 => graphic_item2, 2 => graphic_item3}
+    expected_hash = {0 => {graphic_item_type: 'circle', center: ['46.736', '94.615'], end: ['47.879', '96.012'], layer: 'Dwgs.User', width: '0.15'}, 1 => {graphic_item_type: 'line', start: ['23.114', '57.658'], end: ['73.66', '57.658'], layer: 'Dwgs.User', width: '0.15', tstamp: '6000FF7D'}, 2 => {graphic_item_type: 'text', text: 'INDEX', at: ['42.164', '90.17'], layer: 'F.SilkS', tstamp: '60004E1D', size: ['1', '1'], thickness: '0.15', justify: ''}}
+    @graphic_items_from_hash = GraphicItems.new(input_hash)
+    value(@graphic_items_from_hash.size).must_equal 3
+    value(@graphic_items_from_hash.to_h).must_equal expected_hash
+  end
+
+  it "can make an equivalent Tracks with another Tracks's #to_h" do
+    graphic_item1 = {graphic_item_type: 'circle', center: ["46.736", "94.615"], end: ["47.879", "96.012"], layer: "Dwgs.User", width: "0.15"}
+    graphic_item2 = {graphic_item_type: 'line', start: ['23.114', '57.658'], end: ['73.66', '57.658'], layer: 'Dwgs.User', width: '0.15', tstamp: '6000FF7D'}
+    graphic_item3 = {graphic_item_type: 'text', text: 'INDEX', at: ['42.164', '90.17'], layer: 'F.SilkS', tstamp: '60004E1D', size: ['1', '1'], thickness: '0.15'}
+    orig = GraphicItems.new({0 => graphic_item1, 1 => graphic_item2, 2 => graphic_item3})
+    new = GraphicItems.new(orig.to_h)
+    value(new.size).must_equal orig.size
+    value(new.to_h).must_equal orig.to_h
+    value(new.to_sexpr).must_equal orig.to_sexpr
+  end
+
   it 'has a #add_graphic_item method' do
     value(@graphic_items).must_respond_to :add_graphic_item
   end
