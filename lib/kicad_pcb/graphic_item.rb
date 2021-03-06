@@ -1,4 +1,3 @@
-# require_relative 'render'
 require_relative 'graphic_item/line'
 require_relative 'graphic_item/text'
 require_relative 'graphic_item/arc'
@@ -8,8 +7,6 @@ require_relative 'graphic_item/circle'
 
 class KicadPcb
   class GraphicItem
-
-    # include Render # Render contains #indent, #render_value, #render_array, and #render_hash
 
     def self.new(graphic_item_hash)
       if graphic_item_hash[:graphic_item_type].to_s == 'line'
@@ -22,13 +19,13 @@ class KicadPcb
         Circle.new(graphic_item_hash)
       else
         raise ArgumentError, 'valid graphic_item_type not specified in hash'
-      end #TODO: Should there be an `else`?
+      end
     end
 
-    # def initialize # Should never be used for this object.
+    # def initialize # Should never be used for this class.
     # end
 
-    # def to_sexpr # Should never be used for this object.
+    # def to_sexpr # Should never be used for this class.
     # end
 
   end
