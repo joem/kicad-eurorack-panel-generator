@@ -8,14 +8,20 @@ class KicadPcb
     extend Forwardable # needed for the #def_delegators forwarding
     include Render # Render contains #indent, #render_value, #render_array, and #render_hash
 
+    attr_reader :graphic_items
+
     # Forward some Hash and Enumerable methods straight to the hash
     def_delegators :@graphic_items, :[], :delete, :each, :include?, :length, :size
 
+    # Initialize a new GraphicItems object
+    # Optional argument: a hash whose values are GraphicItem hashes.
+    # The keys don't matter except that the hash will be sorted by the keys and added in that order.
+    #TODO: Make it able to take GraphicItem objects in addition to the GraphicItem hashes.
     def initialize(graphic_items_hash = {})
       @graphic_items = []
       # If we were passed a hash, use it to set some graphic items
       if graphic_items_hash
-        graphic_items_hash.each do |_type, graphic_item_hash|
+        graphic_items_hash.sort.each do |graphic_item_hash|
           add_graphic_item(graphic_item_hash)
         end
       end
@@ -23,11 +29,7 @@ class KicadPcb
 
     def add_graphic_item(graphic_item_hash)
       @graphic_items << GraphicItem.new(graphic_item_hash)
-    end
-
-    # handy if you ever want to see the actual objects
-    def graphic_items
-      @graphic_items
+      self # This lets it be chained
     end
 
     # not really neaded for anything, but why not add it, I guess
@@ -36,20 +38,12 @@ class KicadPcb
     end
 
     def to_h
-      output_hash = {}
-      @graphic_items.each do |graphic_item|
-        output_hash[graphic_item[:graphic_item_type]] = graphic_item.to_h
-      end
-      return output_hash
+      # This is a concise way of making an array into a hash where the keys are
+      # the array indicies and the values are the array values:
+      @graphic_items.map.with_index { |x, i| [i, x.to_h] }.to_h
     end
 
     def to_sexpr
-      # output = ''
-      # @graphic_items.each do |graphic_item|
-      #   output << graphic_item.to_sexpr
-      #   output << "\n"
-      # end
-      # return output
       @graphic_items.map(&:to_sexpr).join("\n")
     end
 
