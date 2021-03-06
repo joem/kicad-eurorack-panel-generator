@@ -9,7 +9,7 @@ class KicadPcb
       extend Forwardable # needed for the #def_delegators forwarding
       include Render # Render contains #indent, #render_value, #render_array, and #render_hash
 
-      attr_reader :text, :at, :layer, :tstamp, :size, :thickness, :justify, :graphic_item_type
+      attr_reader :text, :at, :layer, :tstamp, :text_size, :thickness, :justify, :graphic_item_type
 
       # Forward some Hash and Enumerable methods straight to the hash
       def_delegators :to_h, :[], :each, :include?, :key?, :keys, :length, :size
@@ -19,7 +19,7 @@ class KicadPcb
         @at = Param[text_hash[:at] || [nil,nil,nil]] # Ensure it'll be an array if nothing was passed to it
         @layer = Param[text_hash[:layer]]
         @tstamp = Param.new_and_ensure_really_empty_if_empty(text_hash[:tstamp])
-        @size = Param[text_hash[:size] || [nil,nil]] # Ensure it'll be an array if nothing was passed to it
+        @text_size = Param[text_hash[:size] || text_hash[:text_size] || [nil,nil]] # Ensure array if nothing passed
         @thickness = Param[text_hash[:thickness]]
         @justify = Param.new_and_ensure_really_empty_if_empty(text_hash[:justify])
         @graphic_item_type = text_hash[:graphic_item_type] # Not a param that needs rendering, so don't make it a Param
@@ -37,7 +37,7 @@ class KicadPcb
         output = ''
         output << "(gr_text #{@text} (at #{@at}) (layer #{@layer})#{optional_tstamp}"
         output << "\n"
-        output << "  (effects (font (size #{@size}) (thickness #{@thickness}))#{optional_justify})"
+        output << "  (effects (font (size #{@text_size}) (thickness #{@thickness}))#{optional_justify})"
         output << "\n"
         output << ")"
         return output
@@ -50,7 +50,7 @@ class KicadPcb
           at: @at.to_a,
           layer: @layer.to_s,
           tstamp: @tstamp.to_s,
-          size: @size.to_a,
+          size: @text_size.to_a,
           thickness: @thickness.to_s,
           justify: @justify.to_s
         }
