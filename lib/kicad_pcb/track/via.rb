@@ -15,10 +15,34 @@ class KicadPcb
 
       attr_accessor :at, :size, :drill, :layers, :net, :tstamp
 
-      def initialize(via_hash)
+      def initialize(via_hash = {})
+        @at = Param[via_hash[:at] || [nil,nil]] # Ensure it'll be an array if nothing was passed to it
+        @size = Param[via_hash[:size]]
+        @drill = Param[via_hash[:drill]]
+        @layers = Param[via_hash[:layers] || [nil,nil]] # Ensure it'll be an array if nothing was passed to it
+        @net = Param[via_hash[:net]]
+        @tstamp = Param.new_and_ensure_really_empty_if_empty(via_hash[:tstamp])
+        @track_type = via_hash[:track_type] # Not a param that needs rendering, so don't make it a Param
       end
 
       def to_sexpr
+        optional_tstamp = ''
+        unless @tstamp.to_s.empty?
+          optional_tstamp = " (tstamp #{@tstamp})"
+        end
+        "(via (at #{@at}) (size #{@size}) (drill #{@drill}) (layers #{@layers}) (net #{@net})#{optional_tstamp})"
+      end
+
+      def to_h
+        {
+          track_type: @track_type, # no need to do #to_s on this
+          at: @at.to_a,
+          size: @size.to_s,
+          drill: @drill.to_s,
+          layers: @layers.to_a,
+          net: @net.to_s,
+          tstamp: @tstamp.to_s
+        }
       end
 
     end
