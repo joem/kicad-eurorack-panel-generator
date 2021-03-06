@@ -1,4 +1,3 @@
-# require_relative 'render'
 require_relative 'track/segment'
 require_relative 'track/via'
 
@@ -7,22 +6,20 @@ require_relative 'track/via'
 class KicadPcb
   class Track
 
-    # include Render # Render contains #indent, #render_value, #render_array, and #render_hash
-
     def self.new(track_hash)
       if track_hash[:track_type].to_s == 'segment'
-        # make a Segment
         Segment.new(track_hash)
       elsif track_hash[:track_type].to_s == 'via'
-        # make a Via
         Via.new(track_hash)
-      end #TODO: Should there be an `else`?
+      else
+        raise ArgumentError, 'valid track_type not specified in hash'
+      end
     end
 
-    # def initialize(track_hash)
+    # def initialize(track_hash) # Should never be used for this class.
     # end
 
-    # def to_sexpr
+    # def to_sexpr # Should never be used for this class.
     # end
 
   end
