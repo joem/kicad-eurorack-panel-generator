@@ -1,23 +1,21 @@
-require_relative '../render'
+require 'forwardable'
+require_relative '../param'
 
 class KicadPcb
   class Track
     class Via
 
+      extend Forwardable # needed for the #def_delegators forwarding
       include Render # Render contains #indent, #render_value, #render_array, and #render_hash
 
-      # at 48.133 48.006
-      # size 0.8
-      # drill 0.4
-      # layers F.Cu B.Cu
-      # net 4
-      # tstamp 5F6784AA (optional!)
+      attr_reader :at, :via_size, :drill, :layers, :net, :tstamp
 
-      attr_accessor :at, :size, :drill, :layers, :net, :tstamp
+      # Forward some Hash and Enumerable methods straight to the hash
+      def_delegators :to_h, :[], :each, :include?, :key?, :keys, :length, :size
 
       def initialize(via_hash = {})
         @at = Param[via_hash[:at] || [nil,nil]] # Ensure it'll be an array if nothing was passed to it
-        @size = Param[via_hash[:size]]
+        @via_size = Param[via_hash[:size]] || Param[via_hash[:via_size]]
         @drill = Param[via_hash[:drill]]
         @layers = Param[via_hash[:layers] || [nil,nil]] # Ensure it'll be an array if nothing was passed to it
         @net = Param[via_hash[:net]]
@@ -30,14 +28,14 @@ class KicadPcb
         unless @tstamp.to_s.empty?
           optional_tstamp = " (tstamp #{@tstamp})"
         end
-        "(via (at #{@at}) (size #{@size}) (drill #{@drill}) (layers #{@layers}) (net #{@net})#{optional_tstamp})"
+        "(via (at #{@at}) (size #{@via_size}) (drill #{@drill}) (layers #{@layers}) (net #{@net})#{optional_tstamp})"
       end
 
       def to_h
         {
           track_type: @track_type, # no need to do #to_s on this
           at: @at.to_a,
-          size: @size.to_s,
+          size: @via_size.to_s,
           drill: @drill.to_s,
           layers: @layers.to_a,
           net: @net.to_s,
