@@ -1,15 +1,45 @@
+require 'forwardable'
 require_relative 'track'
 require_relative 'render'
 
 class KicadPcb
   class Tracks
 
+    extend Forwardable # needed for the #def_delegators forwarding
     include Render # Render contains #indent, #render_value, #render_array, and #render_hash
 
-    def initialize
+    attr_reader :tracks
+
+    # Forward some Hash and Enumerable methods straight to the hash
+    def_delegators :@tracks, :[], :delete, :each, :include?, :length, :size
+
+    def initialize(tracks_hash = {})
+      @tracks = []
+      # If we were passed a hash, use it to set some tracks
+      if tracks_hash
+        tracks_hash.keys.sort.each do |index|
+          add_track(tracks_hash[index])
+        end
+      end
+    end
+
+    def add_track(track_hash)
+      @tracks << Track.new(track_hash)
+      self # This lets it be chained
+    end
+
+    def to_a
+      @tracks.map(&:to_h)
+    end
+
+    def to_h
+      # This is a concise way of making an array into a hash where the keys are
+      # the array indicies and the values are the array values:
+      @tracks.map.with_index { |x, i| [i, x.to_h] }.to_h
     end
 
     def to_sexpr
+      @tracks.map(&:to_sexpr).join("\n")
     end
 
   end
