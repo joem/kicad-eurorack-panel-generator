@@ -46,12 +46,12 @@ class KicadPcb
     end
 
     def to_sexpr
-      output = ''
-      @net_classes.each do |_key, net_class|
-        output << net_class.to_sexpr
-        output << "\n"
+      output_array = []
+      # @net_classes.keys.sort.each do |key|
+      @net_classes.keys.each do |key|
+        output_array << @net_classes[key].to_sexpr
       end
-      return output
+      return output_array.join("\n")
     end
 
     def to_h
