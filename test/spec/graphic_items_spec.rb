@@ -132,9 +132,9 @@ describe KicadPcb::GraphicItems do
       @graphic_items.add_graphic_item({graphic_item_type: 'line'})
       value(@graphic_items.to_h.keys).must_equal [0]
       @graphic_items.add_graphic_item({graphic_item_type: 'line'})
-      value(@graphic_items.to_h.keys).must_equal [0,1]
+      value(@graphic_items.to_h.keys.sort).must_equal [0,1].sort
       @graphic_items.add_graphic_item({graphic_item_type: 'line'})
-      value(@graphic_items.to_h.keys).must_equal [0,1,2]
+      value(@graphic_items.to_h.keys.sort).must_equal [0,1,2].sort
     end
   end
 

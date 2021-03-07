@@ -149,9 +149,9 @@ describe KicadPcb::Nets do
       @nets.set_net({number: '0'})
       value(@nets.to_h.keys).must_equal [0]
       @nets.set_net({number: '1'})
-      value(@nets.to_h.keys).must_equal [0,1]
+      value(@nets.to_h.keys.sort).must_equal [0,1].sort
       @nets.set_net({number: '5'})
-      value(@nets.to_h.keys).must_equal [0,1,5]
+      value(@nets.to_h.keys.sort).must_equal [0,1,5].sort
     end
   end
 

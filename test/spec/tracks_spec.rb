@@ -122,9 +122,9 @@ describe KicadPcb::Tracks do
       @tracks.add_track({track_type: 'segment'})
       value(@tracks.to_h.keys).must_equal [0]
       @tracks.add_track({track_type: 'segment'})
-      value(@tracks.to_h.keys).must_equal [0,1]
+      value(@tracks.to_h.keys.sort).must_equal [0,1].sort
       @tracks.add_track({track_type: 'segment'})
-      value(@tracks.to_h.keys).must_equal [0,1,2]
+      value(@tracks.to_h.keys.sort).must_equal [0,1,2].sort
     end
   end
 
