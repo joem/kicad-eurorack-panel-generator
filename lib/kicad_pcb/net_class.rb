@@ -26,10 +26,14 @@ class KicadPcb
 
     def add_net(net_name)
       # Only add it if it's not already there.
-      unless @nets.include?(net_name)
-        @nets << Param[net_name]
+      unless net_name.to_s.empty?
+        unless @nets.map(&:to_s).include?(net_name.to_s)
+          @nets << Param[net_name]
+        end
       end
     end
+
+    #TODO: Make a delete_net(net_name) method
 
     # Return a string of the s-expression
     def to_sexpr
@@ -81,5 +85,42 @@ end
 #    (via_drill 0.4)
 #    (uvia_dia 0.3)
 #    (uvia_drill 0.1)
+#  )
+
+#  (net_class Default "This is the default net class."
+#    (clearance 0.2)
+#    (trace_width 0.25)
+#    (via_dia 0.8)
+#    (via_drill 0.4)
+#    (uvia_dia 0.3)
+#    (uvia_drill 0.1)
+#    (add_net +5V)
+#    (add_net -12V)
+#    (add_net -5V)
+#    (add_net /front_A)
+#    (add_net /front_B)
+#    (add_net /front_C)
+#    (add_net /front_D)
+#    (add_net /front_E)
+#    (add_net /front_F)
+#    (add_net /front_G)
+#    (add_net /front_H)
+#    (add_net GND)
+#    (add_net "Net-(C5-Pad2)")
+#    (add_net "Net-(D3-Pad1)")
+#    (add_net "Net-(J1-PadT)")
+#    (add_net "Net-(J1-PadTN)")
+#    (add_net "Net-(J2-PadT)")
+#    (add_net "Net-(J2-PadTN)")
+#    (add_net "Net-(J5-PadT)")
+#    (add_net "Net-(J5-PadTN)")
+#    (add_net "Net-(J6-PadT)")
+#    (add_net "Net-(J6-PadTN)")
+#    (add_net "Net-(J8-PadT)")
+#    (add_net "Net-(J8-PadTN)")
+#    (add_net "Net-(R13-Pad2)")
+#    (add_net "Net-(R19-Pad2)")
+#    (add_net "Net-(R3-Pad2)")
+#    (add_net "Net-(U5-Pad7)")
 #  )
 
