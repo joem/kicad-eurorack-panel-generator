@@ -34,7 +34,7 @@ class KicadPcb
     # net_hash must have the following keys: :number, :name
     def set_net(net_hash)
       # Index by number since name can be blank
-      @nets[net_hash[:number].to_s] = Net.new(net_hash)
+      @nets[net_hash[:number].to_i] = Net.new(net_hash)
       self # So it can be chained.
     end
 
