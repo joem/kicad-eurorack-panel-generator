@@ -17,7 +17,7 @@ describe KicadPcb::Nets do
     net1 = {number: '0', name: ''}
     net2 = {number: '1', name: 'foo'}
     input_hash = {0 => net1, 1 => net2}
-    expected_hash = {'0' => {number: '0', name: '""'}, '1' => {number: '1', name: 'foo'}}
+    expected_hash = {0 => {number: '0', name: '""'}, 1 => {number: '1', name: 'foo'}}
     expected_s_expression = "(net 0 \"\")\n(net 1 foo)"
     @nets_from_hash = Nets.new(input_hash)
     value(@nets_from_hash.size).must_equal 2
@@ -63,13 +63,27 @@ describe KicadPcb::Nets do
     end
     it 'adds a net if passed net data' do
       @nets.set_net({number: '0', name: ''})
-      value(@nets.instance_variable_get(:@nets)['0']).must_be_instance_of KicadPcb::Net
+      value(@nets.instance_variable_get(:@nets)[0]).must_be_instance_of KicadPcb::Net
     end
     it 'can chain multiple calls together' do
       @nets.set_net({number: '0', name: ''}).set_net({number: '1', name: 'foo'})
       value(@nets.size).must_equal 2
       @nets.set_net({number: '2', name: 'bar'}).set_net({number: '3', name: 'bazzzzz'}).set_net({number: '4', name: 'fizzbuzz'})
       value(@nets.size).must_equal 5
+    end
+    it 'uses an Integer key whether called with a string or an integer for the :number' do
+      @nets.set_net({number: '0', name: 'foo'})
+      value(@nets.keys[0]).must_be_instance_of Integer
+      # value(@nets[0].name.to_s).must_equal 'foo'
+      @nets.set_net({number: 1, name: 'bar'})
+      # value(@nets[1].name.to_s).must_equal 'bar'
+      value(@nets.keys[1]).must_be_instance_of Integer
+    end
+    it "doesn't use a String key whether called with a string or an integer for the :number" do
+      @nets.set_net({number: '0', name: 'foo'})
+      value(@nets.keys[0]).wont_be_instance_of String
+      @nets.set_net({number: 1, name: 'bar'})
+      value(@nets.keys[1]).wont_be_instance_of String
     end
     #TODO: Test overwriting a net!
   end
@@ -115,15 +129,15 @@ describe KicadPcb::Nets do
     end
     it 'returns an hash with Hashes for values' do
       @nets.set_net({number: '0', name: ''})
-      value(@nets.to_h['0']).must_be_instance_of Hash
+      value(@nets.to_h[0]).must_be_instance_of Hash
     end
     it 'uses the keys it is set with' do
       @nets.set_net({number: '0'})
-      value(@nets.to_h.keys).must_equal ['0']
+      value(@nets.to_h.keys).must_equal [0]
       @nets.set_net({number: '1'})
-      value(@nets.to_h.keys).must_equal ['0','1']
+      value(@nets.to_h.keys).must_equal [0,1]
       @nets.set_net({number: '5'})
-      value(@nets.to_h.keys).must_equal ['0','1','5']
+      value(@nets.to_h.keys).must_equal [0,1,5]
     end
   end
 
@@ -137,7 +151,7 @@ describe KicadPcb::Nets do
     end
     it 'calls #to_sexpr on the nets' do
       @nets.set_net({number: '0'})
-      expected_s_expression1 = @nets.instance_variable_get(:@nets)['0'].to_sexpr
+      expected_s_expression1 = @nets.instance_variable_get(:@nets)[0].to_sexpr
       value(@nets.to_sexpr).must_equal expected_s_expression1
     end
     it 'joins multiple graphic items s-expressions with a newsegment' do
