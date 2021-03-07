@@ -105,6 +105,20 @@ describe KicadPcb::Nets do
     end
   end
 
+
+  it 'has a #set_default_net method' do
+    value(@nets).must_respond_to :set_default_net
+  end
+
+  describe '#set_default_net' do
+    it 'sets the default net' do
+      @nets.set_default_net
+      value(@nets.size).must_equal 1
+      value(@nets[0].to_sexpr).must_equal '(net 0 "")'
+      value(@nets[0].to_h).must_equal Hash[number: '0', name: '""']
+    end
+  end
+
   #it 'has a #to_a method' do
   #  value(@nets).must_respond_to :to_a
   #end
