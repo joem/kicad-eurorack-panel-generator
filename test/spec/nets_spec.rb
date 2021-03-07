@@ -14,7 +14,7 @@ describe KicadPcb::Nets do
   end
 
   it 'instantiates correctly when passed a valid hash' do
-    net1 = {number: '0', name: ''}
+    net1 = {number: '0', name: '""'}
     net2 = {number: '1', name: 'foo'}
     input_hash = {0 => net1, 1 => net2}
     expected_hash = {0 => {number: '0', name: '""'}, 1 => {number: '1', name: 'foo'}}
@@ -26,7 +26,7 @@ describe KicadPcb::Nets do
   end
 
   it "can make an equivalent Nets with another Nets's #to_h" do
-    net1 = {number: '0', name: ''}
+    net1 = {number: '0', name: '""'}
     net2 = {number: '1', name: 'foo'}
     orig = Nets.new({0 => net1, 1 => net2})
     new = Nets.new(orig.to_h)
@@ -43,7 +43,7 @@ describe KicadPcb::Nets do
     it 'changes the internal array' do
       #TODO: Maybe make this just test size instead of going for instance variables?
       intial_internal_variable1 = @nets.instance_variable_get(:@nets).dup
-      @nets.set_net({number: '0', name: ''})
+      @nets.set_net({number: '0', name: '""'})
       value(@nets.instance_variable_get(:@nets)).wont_equal intial_internal_variable1
       intial_internal_variable2 = @nets.instance_variable_get(:@nets).dup
       @nets.set_net({number: '1', name: 'foo'})
@@ -62,11 +62,11 @@ describe KicadPcb::Nets do
       value(@nets.instance_variable_get(:@nets)).wont_equal intial_internal_variable4
     end
     it 'adds a net if passed net data' do
-      @nets.set_net({number: '0', name: ''})
+      @nets.set_net({number: '0', name: '""'})
       value(@nets.instance_variable_get(:@nets)[0]).must_be_instance_of KicadPcb::Net
     end
     it 'can chain multiple calls together' do
-      @nets.set_net({number: '0', name: ''}).set_net({number: '1', name: 'foo'})
+      @nets.set_net({number: '0', name: '""'}).set_net({number: '1', name: 'foo'})
       value(@nets.size).must_equal 2
       @nets.set_net({number: '2', name: 'bar'}).set_net({number: '3', name: 'bazzzzz'}).set_net({number: '4', name: 'fizzbuzz'})
       value(@nets.size).must_equal 5
@@ -99,7 +99,7 @@ describe KicadPcb::Nets do
     it 'returns the internal @nets instance variable' do
       internal_instance_variable1 = @nets.instance_variable_get(:@nets).dup
       value(@nets.nets).must_equal internal_instance_variable1
-      @nets.set_net({number: '0', name: ''})
+      @nets.set_net({number: '0', name: '""'})
       internal_instance_variable2 = @nets.instance_variable_get(:@nets).dup
       value(@nets.nets).must_equal internal_instance_variable2
     end
@@ -114,7 +114,7 @@ describe KicadPcb::Nets do
   #    value(@nets.nets).must_be_instance_of Array
   #  end
   #  it 'returns an array of Hashes' do
-  #    @nets.set_net({number: '0', name: ''})
+  #    @nets.set_net({number: '0', name: '""'})
   #    value(@nets.to_a[0]).must_be_instance_of Hash
   #  end
   #end
@@ -128,7 +128,7 @@ describe KicadPcb::Nets do
       value(@nets.to_h).must_be_instance_of Hash
     end
     it 'returns an hash with Hashes for values' do
-      @nets.set_net({number: '0', name: ''})
+      @nets.set_net({number: '0', name: '""'})
       value(@nets.to_h[0]).must_be_instance_of Hash
     end
     it 'uses the keys it is set with' do

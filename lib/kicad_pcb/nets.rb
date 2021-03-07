@@ -39,7 +39,7 @@ class KicadPcb
     end
 
     def set_default_net
-      set_net({number: '0', name: ''})
+      set_net({number: '0', name: '""'})
     end
 
     def to_sexpr
