@@ -12,7 +12,7 @@ class KicadPcb
     attr_reader :number, :name
 
     # Forward some Hash and Enumerable methods straight to the hash
-    def_delegators :to_h, :[], :each, :include?, :key?, :length, :size
+    def_delegators :to_h, :[], :each, :include?, :key?, :keys, :length, :size
 
     def initialize(net_hash)
       @number = Param[net_hash[:number]]
@@ -26,7 +26,7 @@ class KicadPcb
     def to_h
       {
         number: @number.to_s,
-        name: @name.to_s,
+        name: @name.to_s
       }
     end
 
