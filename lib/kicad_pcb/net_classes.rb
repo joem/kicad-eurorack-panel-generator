@@ -10,6 +10,8 @@ class KicadPcb
     extend Forwardable # needed for the #def_delegators forwarding
     include Render # Render contains #indent, #render_value, #render_array, and #render_hash
 
+    attr_reader :net_classes
+
     # Forward some Hash and Enumerable methods straight to the hash
     def_delegators :@net_classes, :[], :delete, :each, :include?, :key?, :length, :size
 
