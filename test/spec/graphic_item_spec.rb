@@ -9,14 +9,14 @@ describe KicadPcb::GraphicItem do
 #   end
 
   it "raises the right exception if instantiated without any arguments" do
-    exception = proc{ GraphicItem.new }.must_raise(ArgumentError)
+    exception = _(proc{ GraphicItem.new }).must_raise(ArgumentError)
     value(exception.message).must_equal 'wrong number of arguments (given 0, expected 1)'
   end
 
   it "raises the right exception if instantiated without valid :graphic_item_type in argument hash" do
-    exception1 = proc{ GraphicItem.new({}) }.must_raise(ArgumentError)
+    exception1 = _(proc{ GraphicItem.new({}) }).must_raise(ArgumentError)
     value(exception1.message).must_equal 'valid graphic_item_type not specified in hash'
-    exception2 = proc{ GraphicItem.new({graphic_item_type: 'bad type'}) }.must_raise(ArgumentError)
+    exception2 = _(proc{ GraphicItem.new({graphic_item_type: 'bad type'}) }).must_raise(ArgumentError)
     value(exception2.message).must_equal 'valid graphic_item_type not specified in hash'
   end
 

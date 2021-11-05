@@ -9,14 +9,14 @@ describe KicadPcb::Track do
 #   end
 
   it "raises the right exception if instantiated without any arguments" do
-    exception = proc{ Track.new }.must_raise(ArgumentError)
+    exception = _(proc{ Track.new }).must_raise(ArgumentError)
     value(exception.message).must_equal 'wrong number of arguments (given 0, expected 1)'
   end
 
   it "raises the right exception if instantiated without valid :track_type in argument hash" do
-    exception1 = proc{ Track.new({}) }.must_raise(ArgumentError)
+    exception1 = _(proc{ Track.new({}) }).must_raise(ArgumentError)
     value(exception1.message).must_equal 'valid track_type not specified in hash'
-    exception2 = proc{ Track.new({track_type: 'bad type'}) }.must_raise(ArgumentError)
+    exception2 = _(proc{ Track.new({track_type: 'bad type'}) }).must_raise(ArgumentError)
     value(exception2.message).must_equal 'valid track_type not specified in hash'
   end
 

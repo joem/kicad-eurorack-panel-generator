@@ -9,7 +9,7 @@ describe KicadPcb::Net do
 #   end
 
   it "raises the right exception if instantiated without any arguments" do
-    exception = proc{ Net.new }.must_raise(ArgumentError)
+    exception = _(proc{ Net.new }).must_raise(ArgumentError)
     value(exception.message).must_equal 'wrong number of arguments (given 0, expected 1)'
   end
 
