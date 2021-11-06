@@ -30,17 +30,17 @@ require_relative 'kicad_pcb/zones'
 
 class KicadPcb
 
-  # attr_accessor :header
-  # attr_accessor :general
-  # attr_accessor :page
-  # attr_accessor :layers
-  # attr_accessor :setup
-  # attr_accessor :nets
-  # attr_accessor :net_classes
-  # attr_accessor :modules
-  # attr_accessor :graphic_items
-  # attr_accessor :tracks
-  # attr_accessor :zones
+  attr_reader :header
+  attr_reader :general
+  attr_reader :page
+  attr_reader :layers
+  attr_reader :setup
+  attr_reader :nets
+  attr_reader :net_classes
+  attr_reader :modules
+  attr_reader :graphic_items
+  attr_reader :tracks
+  attr_reader :zones
 
   # top level things:
   #
@@ -105,133 +105,26 @@ class KicadPcb
 
   #TODO: What are some options that might need to be set upon doing KicadPcb.new?? Add them to the initializer arguments but with defaults.
   def initialize()
-
     @header = Header.new
     @header.set_defaults
-
     # @general = []           #=> some sort of structure defined in KicadPcb !!!!
-    @page = Page.new
-
-    @layers = Layers.new
-    @layers.set_default_layers
-
-    @setup = Setup.new
-    @setup.set_default_setup
-
-    @nets = Nets.new
-
-    @net_classes = NetClasses.new
-    @net_classes.add_default_net_class
-
-    @parts = Parts.new
-
-    @graphic_items = GraphicItems.new
-
-    @tracks = Tracks.new
-
-    @zones = Zones.new
-
-
-
-    #TODO: Find out if I can or should change the host to mention my ruby program?
-    @header = 'kicad_pcb (version 20171130) (host pcbnew "(5.1.2-1)-1")'
+    #TODO: Should this be handled some other way, like everything else????
     @general = OpenStruct.new(
       thickness: '1.6'.to_d,
     )
-    @page = 'A4' # The docs consider this a part of the General Section, even though it's a separate item!
-    # We might not want to do this one right away, in case they're overridden or duplicated or something in a user pcb file?
-    @layers = OpenStruct.new(
-      '0' => ['F.Cu', 'signal'],
-      '31' => ['B.Cu', 'signal'],
-      '32' => ['B.Adhes', 'user'],
-      '33' => ['F.Adhes', 'user'],
-      '34' => ['B.Paste', 'user'],
-      '35' => ['F.Paste', 'user'],
-      '36' => ['B.SilkS', 'user'],
-      '37' => ['F.SilkS', 'user'],
-      '38' => ['B.Mask', 'user'],
-      '39' => ['F.Mask', 'user'],
-      '40' => ['Dwgs.User', 'user'],
-      '41' => ['Cmts.User', 'user'],
-      '42' => ['Eco1.User', 'user'],
-      '43' => ['Eco2.User', 'user'],
-      '44' => ['Edge.Cuts', 'user'],
-      '45' => ['Margin', 'user'],
-      '46' => ['B.CrtYd', 'user'],
-      '47' => ['F.CrtYd', 'user'],
-      '48' => ['B.Fab', 'user'],
-      '49' => ['F.Fab', 'user']
-    )
-    @setup = OpenStruct.new(
-      last_trace_width: '0.25'.to_d,
-      trace_clearance: '0.2'.to_d,
-      zone_clearance: '0.508'.to_d,
-      zone_45_only: 'no',
-      trace_min: '0.2'.to_d,
-      via_size: '0.8'.to_d,
-      via_drill: '0.4'.to_d,
-      via_min_size: '0.4'.to_d,
-      via_min_drill: '0.3'.to_d,
-      uvia_size: '0.3'.to_d,
-      uvia_drill: '0.1'.to_d,
-      uvias_allowed: 'no',
-      uvia_min_size: '0.2'.to_d,
-      uvia_min_drill: '0.1'.to_d,
-      edge_width: '0.05'.to_d,
-      segment_width: '0.2'.to_d,
-      pcb_text_width: '0.3'.to_d,
-      pcb_text_size: ['1.5'.to_d, '1.5'.to_d],
-      mod_edge_width: '0.12'.to_d,
-      mod_text_size: ['1'.to_d, '1'.to_d],
-      mod_text_width: '0.15'.to_d,
-      pad_size: ['1.524'.to_d, '1.524'.to_d],
-      pad_drill: '0.762'.to_d,
-      pad_to_mask_clearance: '0.051'.to_d,
-      solder_mask_min_width: '0.25'.to_d,
-      aux_axis_origin: ['0'.to_d, '0'.to_d],
-      visible_elements: 'FFFFFF7F',
-      pcbplotparams: OpenStruct.new(
-        layerselection: '0x010fc_ffffffff',
-        usegerberextensions: false,
-        usegerberattributes: false,
-        usegerberadvancedattributes: false,
-        creategerberjobfile: false,
-        excludeedgelayer: true,
-        linewidth: '0.150000'.to_d,
-        plotframeref: false,
-        viasonmask: false,
-        mode: 1,
-        useauxorigin: false,
-        hpglpennumber: 1,
-        hpglpenspeed: '20', #TODO: What to do about this? Int or BigDec?
-        hpglpendiameter: '15.000000'.to_d,
-        psnegative: false,
-        psa4output: false,
-        plotreference: true,
-        plotvalue: true,
-        plotinvisibletext: false,
-        padsonsilk: false,
-        subtractmaskfromsilk: false,
-        outputformat: 1,
-        mirror: false,
-        drillshape: 1,
-        scaleselection: '1', #TODO: What to do about this? Int or BigDec?
-        outputdirectory: ''
-      )
-    )
-    #TODO: Make this a list of hashes, not just a single hash!!! We need to be able to add to it! (Don't we?? Is a hash OK??)
-    # @nets = {
-    #   0 => ''
-    # }
-    # @net_classes = []
-    @net_classes = {}
-    add_net_class(name: 'Default', description: 'This is the default net class.')
-    @nets = []
-    add_net(net_name: '', net_class: nil) # net 0 with no name doesn't get added to any net class
-    @modules = []
-    @graphic_items = []
-    @tracks = []
-    @zones = []
+    # The docs consider this a part of the General Section, even though it's a separate item!
+    @page = Page.new
+    @layers = Layers.new
+    @layers.set_default_layers
+    @setup = Setup.new
+    @setup.set_default_setup
+    @nets = Nets.new
+    @net_classes = NetClasses.new
+    @net_classes.add_default_net_class
+    @parts = Parts.new
+    @graphic_items = GraphicItems.new
+    @tracks = Tracks.new
+    @zones = Zones.new
   end
 
   def add_net_class(
