@@ -1,83 +1,41 @@
 class KicadPcb
   class Writer
 
-    # * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-    #TODO: Rework this, since all classes have a #to_sexpr method that renders things.
-    #       - all this needs to do is call #to_sexpr on the pcb and then write it to a file???
-    # * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-
-    # Refer to section 4 in this document to see the file spec: https://kicad.org/help/legacy_file_format_documentation.pdf
+    # If needed, refer to section 4 in this document to see the file spec: https://kicad.org/help/legacy_file_format_documentation.pdf
+    # (but most of the formatting isn't done here but in the subclasses that make up the parts of the KicadPcb object)
 
     def initialize(kicad_pcb_object)
       @kicad_pcb_object = kicad_pcb_object
     end
 
-    # def write
-    #   the_output = ""
-
-    #   the_output << write_open_list # initial open parentheses
-    #   the_output << write_header
-    #   the_output << "\n"
-
-    #   the_middle = ""
-    #   the_middle << write_general
-    #   the_middle << "\n\n"
-    #   the_middle << write_page
-    #   the_middle << "\n\n"
-    #   the_middle << write_layers
-    #   the_middle << "\n\n"
-    #   the_middle << write_setup
-    #   the_middle << "\n\n"
-    #   the_middle << write_nets
-    #   the_middle << "\n\n"
-    #   the_middle << write_net_classes
-    #   the_middle << "\n"
-    #   the_middle << write_modules
-    #   the_middle << "\n"
-    #   the_middle << write_graphic_items
-    #   the_middle << "\n"
-    #   the_middle << write_tracks
-    #   the_middle << "\n"
-    #   the_middle << write_zones
-
-    #   the_output << indent(the_middle, 2)
-    #   the_output << "\n"
-    #   the_output << write_close_list # final closed parentheses
-
-    #   return the_output
-    # end
-
-     def write
-       the_output = ""
-       the_output << @kicad_pcb_object.header.to_sexpr
-       the_output << "\n\n"
-       # the_output << @kicad_pcb_object.general.to_sexpr
-       # the_output << "\n"
-       the_output << @kicad_pcb_object.page.to_sexpr
-       the_output << "\n"
-       the_output << @kicad_pcb_object.layers.to_sexpr
-       the_output << "\n\n"
-       the_output << @kicad_pcb_object.setup.to_sexpr
-       the_output << "\n\n"
-       the_output << @kicad_pcb_object.nets.to_sexpr
-       the_output << "\n\n"
-       the_output << @kicad_pcb_object.net_classes.to_sexpr
-       the_output << "\n\n"
-       # the_output << @kicad_pcb_object.parts.to_sexpr
-       # the_output << "\n"
-       the_output << @kicad_pcb_object.graphic_items.to_sexpr
-       the_output << "\n\n"
-       the_output << @kicad_pcb_object.tracks.to_sexpr
-       the_output << "\n"
-       # the_output << @kicad_pcb_object.zones.to_sexpr
-       # the_output << "\n"
-
-       # the_output << write_open_list # initial open parentheses
-       # the_output << write_header
-       # the_output << "\n"
-       # the_output << write_close_list # final closed parentheses
-       return the_output
-     end
+    def write
+      the_output = []
+      # header contains the opening parentheses (but should it???) #TODO: maybe change this?
+      the_output << @kicad_pcb_object.header.to_sexpr
+      the_output << conditional_newline(str: the_output.last, newlines: 2)
+      # the_output << @kicad_pcb_object.general.to_sexpr
+      # the_output << conditional_newline(str: the_output.last)
+      the_output << @kicad_pcb_object.page.to_sexpr
+      the_output << conditional_newline(str: the_output.last)
+      the_output << @kicad_pcb_object.layers.to_sexpr
+      the_output << conditional_newline(str: the_output.last, newlines: 2)
+      the_output << @kicad_pcb_object.setup.to_sexpr
+      the_output << conditional_newline(str: the_output.last, newlines: 2)
+      the_output << @kicad_pcb_object.nets.to_sexpr
+      the_output << conditional_newline(str: the_output.last, newlines: 2)
+      the_output << @kicad_pcb_object.net_classes.to_sexpr
+      the_output << conditional_newline(str: the_output.last, newlines: 2)
+      # the_output << @kicad_pcb_object.parts.to_sexpr
+      # the_output << conditional_newline(str: the_output.last)
+      the_output << @kicad_pcb_object.graphic_items.to_sexpr
+      the_output << conditional_newline(str: the_output.last, newlines: 2)
+      the_output << @kicad_pcb_object.tracks.to_sexpr
+      the_output << conditional_newline(str: the_output.last)
+      # the_output << @kicad_pcb_object.zones.to_sexpr
+      # the_output << conditional_newline(str: the_output.last)
+      the_output << ')' # final closed parentheses on last line
+      return the_output.join('')
+    end
 
     def to_s
       write
@@ -86,6 +44,17 @@ class KicadPcb
 
     private
 
+    # If str, when converted to a string, isn't empty, return a specified number of newlines.
+    # The default number of newlines is 1.
+    def conditional_newline(str:, newlines: 1)
+      if str.to_s != ''
+        "\n" * newlines
+      else
+        ''
+      end
+    end
+
+    #FIXME: Do we need anything below here???? Try commenting it all out!
 
     def write_open_list
       '('
