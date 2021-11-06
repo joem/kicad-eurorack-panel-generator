@@ -9,21 +9,31 @@ module Eurorack
   # 'Intellijel 1U'
   # 'Pulp Logic 1U'
 
+  MAX_PANEL_HEIGHT_3U = "128.5".to_d.freeze # mm
+  MAX_PANEL_HEIGHT_INTELLIJEL_1U = "39.65".to_d.freeze # mm
+  MAX_PANEL_HEIGHT_PULP_LOGIC_1U = "43.18".to_d.freeze # mm
+
+  #TODO: Get rid of the following hash??
   MAX_PANEL_HEIGHT = {
-    '3U'            => "128.5".to_d, # in mm
-    'Intellijel 1U' => "39.65".to_d, # in mm
-    'Pulp Logic 1U' => "43.18".to_d, # in mm
+    '3U' => MAX_PANEL_HEIGHT_3U,
+    'Intellijel 1U' => MAX_PANEL_HEIGHT_INTELLIJEL_1U,
+    'Pulp Logic 1U' => MAX_PANEL_HEIGHT_PULP_LOGIC_1U
   }.freeze
 
+  MAX_PCB_HEIGHT_3U = "108".to_d.freeze # mm #NOTE: 108-110 is the rec'd range I found, so add a way to override?
+  MAX_PCB_HEIGHT_INTELLIJEL_1U = "22.5".to_d.freeze # mm
+  MAX_PCB_HEIGHT_PULP_LOGIC_1U = "28.702".to_d.freeze # mm
+
+  #TODO: Get rid of the following hash??
   MAX_PCB_HEIGHT = {
-    '3U'            => "108".to_d, # in mm #NOTE: 108-110 is the rec'd range I found, so add a way to override?
-    'Intellijel 1U' => "22.5".to_d, # in mm
-    'Pulp Logic 1U' => "28.702".to_d, # in mm
+    '3U' => MAX_PCB_HEIGHT_3U,
+    'Intellijel 1U' => MAX_PCB_HEIGHT_INTELLIJEL_1U,
+    'Pulp Logic 1U' => MAX_PCB_HEIGHT_PULP_LOGIC_1U
   }.freeze
 
-  HP_IN_MM = "5.08".to_d # in mm
-  PANEL_WIDTH_REDUCTION = "0.3".to_d # in mm
-  LEFT_MOUNTING_HOLE_OFFESET = "7.5".to_d # in mm
+  HP_IN_MM = "5.08".to_d.freeze # mm
+  PANEL_WIDTH_REDUCTION = "0.3".to_d.freeze # mm
+  LEFT_MOUNTING_HOLE_OFFESET = "7.5".to_d.freeze # mm
 
   # 3U specs: http://www.doepfer.de/a100_man/a100m_e.htm
   # also: https://sdiy.info/wiki/Eurorack_DIY_parts
