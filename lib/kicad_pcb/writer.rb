@@ -12,40 +12,72 @@ class KicadPcb
       @kicad_pcb_object = kicad_pcb_object
     end
 
-    def write
-      the_output = ""
+    # def write
+    #   the_output = ""
 
-      the_output << write_open_list # initial open parentheses
-      the_output << write_header
-      the_output << "\n"
+    #   the_output << write_open_list # initial open parentheses
+    #   the_output << write_header
+    #   the_output << "\n"
 
-      the_middle = ""
-      the_middle << write_general
-      the_middle << "\n\n"
-      the_middle << write_page
-      the_middle << "\n\n"
-      the_middle << write_layers
-      the_middle << "\n\n"
-      the_middle << write_setup
-      the_middle << "\n\n"
-      the_middle << write_nets
-      the_middle << "\n\n"
-      the_middle << write_net_classes
-      the_middle << "\n"
-      the_middle << write_modules
-      the_middle << "\n"
-      the_middle << write_graphic_items
-      the_middle << "\n"
-      the_middle << write_tracks
-      the_middle << "\n"
-      the_middle << write_zones
+    #   the_middle = ""
+    #   the_middle << write_general
+    #   the_middle << "\n\n"
+    #   the_middle << write_page
+    #   the_middle << "\n\n"
+    #   the_middle << write_layers
+    #   the_middle << "\n\n"
+    #   the_middle << write_setup
+    #   the_middle << "\n\n"
+    #   the_middle << write_nets
+    #   the_middle << "\n\n"
+    #   the_middle << write_net_classes
+    #   the_middle << "\n"
+    #   the_middle << write_modules
+    #   the_middle << "\n"
+    #   the_middle << write_graphic_items
+    #   the_middle << "\n"
+    #   the_middle << write_tracks
+    #   the_middle << "\n"
+    #   the_middle << write_zones
 
-      the_output << indent(the_middle, 2)
-      the_output << "\n"
-      the_output << write_close_list # final closed parentheses
+    #   the_output << indent(the_middle, 2)
+    #   the_output << "\n"
+    #   the_output << write_close_list # final closed parentheses
 
-      return the_output
-    end
+    #   return the_output
+    # end
+
+     def write
+       the_output = ""
+       the_output << @kicad_pcb_object.header.to_sexpr
+       the_output << "\n\n"
+       # the_output << @kicad_pcb_object.general.to_sexpr
+       # the_output << "\n"
+       the_output << @kicad_pcb_object.page.to_sexpr
+       the_output << "\n"
+       the_output << @kicad_pcb_object.layers.to_sexpr
+       the_output << "\n\n"
+       the_output << @kicad_pcb_object.setup.to_sexpr
+       the_output << "\n\n"
+       the_output << @kicad_pcb_object.nets.to_sexpr
+       the_output << "\n\n"
+       the_output << @kicad_pcb_object.net_classes.to_sexpr
+       the_output << "\n\n"
+       # the_output << @kicad_pcb_object.parts.to_sexpr
+       # the_output << "\n"
+       the_output << @kicad_pcb_object.graphic_items.to_sexpr
+       the_output << "\n\n"
+       the_output << @kicad_pcb_object.tracks.to_sexpr
+       the_output << "\n"
+       # the_output << @kicad_pcb_object.zones.to_sexpr
+       # the_output << "\n"
+
+       # the_output << write_open_list # initial open parentheses
+       # the_output << write_header
+       # the_output << "\n"
+       # the_output << write_close_list # final closed parentheses
+       return the_output
+     end
 
     def to_s
       write
