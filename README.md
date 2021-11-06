@@ -149,6 +149,46 @@ I'll hopefully test it on more versions just to make sure.
 3. Run the desired program as above, but without the `--help` option and with the appropriate options for what you want to accomplish.
 
 
+## Development Notes
+
+_Notes while I work on it, so I don't forget key things or loose my place_
+
+- Convert to BigDecimal with `"some_string".to_d`
+
+- Convert from BigDecimal to a nice (NOT engineering or scientific notation) string with `some_bigdecimal.to_s('F')`
+
+- Otherwise keep everything in BigDecimal when doing and math and such
+
+The `Eurorack` module has a lot of useful constants that should be used where applicable instead of raw numbers (stored as BigDecimals):
+
+| Constant                                   | Explanation |
+| ------------------------------------------ | ----------- |
+| `Eurorack::HP_IN_MM`                       | 1 HP is this many mm |
+| `Eurorack::PANEL_WIDTH_REDUCTION`          | When calculating a panel width based on HP, reduce it by this much to allow for tolerances (mm) |
+| `Eurorack::LEFT_MOUNTING_HOLE_OFFESET`     | The left mounting holes are this far from the left edge of panel (mm) |
+| `Eurorack::MAX_PANEL_HEIGHT_3U`            | The max (and usually ideal) height of a 3U format panel (mm) |
+| `Eurorack::MAX_PANEL_HEIGHT_INTELLIJEL_1U` | The max (and usually ideal) height of an Intellijel 1U format panel (mm) |
+| `Eurorack::MAX_PANEL_HEIGHT_PULP_LOGIC_1U` | The max (and usually ideal) height of a Pulp Logic 1U format panel (mm) |
+| `Eurorack::MAX_PCB_HEIGHT_3U`              | The max height of a 3U format pcb (mm) |
+| `Eurorack::MAX_PCB_HEIGHT_INTELLIJEL_1U`   | The max height of an Intellijel 1U format pcb (mm) |
+| `Eurorack::MAX_PCB_HEIGHT_PULP_LOGIC_1U`   | The max height of a Pulp Logic 1U format pcb (mm) |
+| `Eurorack::MAX_PANEL_HEIGHT['3U']`            | Same as `Eurorack::MAX_PANEL_HEIGHT_3U` |
+| `Eurorack::MAX_PANEL_HEIGHT['Intellijel 1U']` | Same as `Eurorack::MAX_PANEL_HEIGHT_INTELLIJEL_1U` |
+| `Eurorack::MAX_PANEL_HEIGHT['Pulp Logic 1U']` | Same as `Eurorack::MAX_PANEL_HEIGHT_PULP_LOGIC_1U` |
+| `Eurorack::MAX_PCB_HEIGHT['3U']`              | Same as `Eurorack::MAX_PCB_HEIGHT_3U` |
+| `Eurorack::MAX_PCB_HEIGHT['Intellijel 1U']`   | Same as `Eurorack::MAX_PCB_HEIGHT_INTELLIJEL_1U` |
+| `Eurorack::MAX_PCB_HEIGHT['Pulp Logic 1U']`   | Same as `Eurorack::MAX_PCB_HEIGHT_PULP_LOGIC_1U` |
+
+The `Eurorack` module also has some methods that might be useful, but I kind of think they should be somewhere else instead of there (in part because module methods are weird)? They are:
+
+- `Eurorack.valid_format` - Interpret format input and return what my classes use as their 'proper' name.
+- `Eurorack.valid_pcb_height?` - Ensure the provided pcb height is less than the max pcb height for a given format.
+- `Eurorack.minimum_hp` - Given a PCB width in mm, return the minimum HP that the PCB will fit in.
+- `Eurorack.panel_hp_to_mm` - Convert a given HP value to the width of a eurack panel in mm, leaving a little room for tolerance.
+- `Eurorack.extract_hp_from_symbol_or_string` - Extract the relevant HP integer from a string or symbol representation of HP.
+
+
+
 ## References
 
 Primary reference for eurorack 3U panel sizes:

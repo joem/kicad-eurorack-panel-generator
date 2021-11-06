@@ -24,7 +24,7 @@ module Eurorack
   MAX_PCB_HEIGHT_INTELLIJEL_1U = "22.5".to_d.freeze # mm
   MAX_PCB_HEIGHT_PULP_LOGIC_1U = "28.702".to_d.freeze # mm
 
-  #TODO: Get rid of the following hash??
+  #TODO: Get rid of the following hash?? (Though it's used in one of the functions below)
   MAX_PCB_HEIGHT = {
     '3U' => MAX_PCB_HEIGHT_3U,
     'Intellijel 1U' => MAX_PCB_HEIGHT_INTELLIJEL_1U,
@@ -40,6 +40,7 @@ module Eurorack
   # 1U specs (Intellijel): https://intellijel.com/support/1u-technical-specifications/
   # 1U specs (Pulp Logic): http://pulplogic.com/1u_tiles/
 
+  #TODO: Should this even be in this module? Maybe it belongs in a parser instead?
   # Interpret format input and return what my classes use as their 'proper' name.
   # If format input is invalid, return nil.
   # (This means the output can be used as a boolean.)
@@ -62,10 +63,12 @@ module Eurorack
     end
   end
 
+  #TODO: Should this even be in this module? Maybe it belongs in a parser instead?
   def self.valid_pcb_height?(pcb_height, format = '3U')
     pcb_height.to_d <= MAX_PCB_HEIGHT[format]
   end
 
+  #TODO: Should this even be in this module? Maybe it belongs in a parser instead?
   # Given a PCB width in mm, return the minimum HP that the PCB will fit in
   #
   # Input should be an Integer, Float, or BigDecimal.
@@ -80,6 +83,7 @@ module Eurorack
     ((pcb_width_mm.to_d + reduction_mm.to_d) / HP_IN_MM).ceil.to_i
   end
 
+  #TODO: Should this even be in this module? Maybe it belongs in a parser instead?
   # Convert a given HP value to the width of a eurack panel in mm, leaving a little room for tolerance
   #
   # Input can be an integer (of Integer or BigDecimal type) or a string/symbol
@@ -108,6 +112,7 @@ module Eurorack
     end
   end
 
+  #TODO: Should this even be in this module? Maybe it belongs in a parser instead?
   # Extract the relevant HP integer from a string or symbol representation of HP.
   #
   # Input can be a string/symbol representation in any of the following
