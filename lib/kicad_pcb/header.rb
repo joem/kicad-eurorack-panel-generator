@@ -10,6 +10,7 @@ class KicadPcb
       @host_version = Param[header_hash[:host_version]]
     end
 
+    #TODO: Find out if I can or should change the host to mention my ruby program?
     def set_defaults
       @version = Param['20171130']
       @host_version = Param['(5.1.2-1)-1']
