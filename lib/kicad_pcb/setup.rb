@@ -14,6 +14,7 @@ class KicadPcb
       @setup = setup_hash
     end
 
+    # This overwrites any existing settings.
     def set_default_setup
       @setup[:last_trace_width] = '0.25'
       @setup[:trace_clearance] = '0.2'
@@ -73,15 +74,15 @@ class KicadPcb
     end
 
     def to_sexpr
-      # output the opening (setup line
-      # iterate over hash and output them
-      # output closing )
+      # Output the opening (setup line
+      # Iterate over hash and output them
+      # Output closing )
       output = ''
       output << '(setup'
       output << "\n"
       output << indent(render_hash(@setup), 2)
-      output << "\n"
       output << ')'
+      #TODO: Figure out why the last two ) are indented one level too much.
       return output
     end
 
