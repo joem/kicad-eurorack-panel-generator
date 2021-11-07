@@ -42,6 +42,15 @@ class KicadPcb
       set_net({number: '0', name: '""'})
     end
 
+    def add_net(name:)
+      set_net({number: @nets.size.to_s, name: name})
+      # This works with @nets.size because that's one higher than the index (since the index starts at 0).
+    end
+
+    def <<(name)
+      add_net(name: name)
+    end
+
     def to_sexpr
       # output = ''
       # @nets.each do |_key, net|

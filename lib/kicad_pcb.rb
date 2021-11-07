@@ -131,34 +131,37 @@ class KicadPcb
     @zones = Zones.new
   end
 
-  def add_net_class(
-        name:,
-        description: '',
-        clearance: '0.2',
-        trace_width: '0.25',
-        via_dia: '0.8',
-        via_drill: '0.4',
-        uvia_dia: '0.3',
-        uvia_drill: '0.1',
-        nets: []
-  )
-    @net_classes[name] = OpenStruct.new(
-      description: description,
-      clearance: clearance.to_d,
-      trace_width: trace_width.to_d,
-      via_dia: via_dia.to_d,
-      via_drill: via_drill.to_d,
-      uvia_dia: uvia_dia.to_d,
-      uvia_drill: uvia_drill.to_d,
-      nets: nets
-    )
-  end
+  # def add_net_class(
+  #       name:,
+  #       description: '',
+  #       clearance: '0.2',
+  #       trace_width: '0.25',
+  #       via_dia: '0.8',
+  #       via_drill: '0.4',
+  #       uvia_dia: '0.3',
+  #       uvia_drill: '0.1',
+  #       nets: []
+  # )
+  #   @net_classes[name] = OpenStruct.new(
+  #     description: description,
+  #     clearance: clearance.to_d,
+  #     trace_width: trace_width.to_d,
+  #     via_dia: via_dia.to_d,
+  #     via_drill: via_drill.to_d,
+  #     uvia_dia: uvia_dia.to_d,
+  #     uvia_drill: uvia_drill.to_d,
+  #     nets: nets
+  #   )
+  # end
 
+  #TODO: Move this into @nets and make it reference @instantiator similar to @general?
+  #       OR just make everything be interfaced through here???
   def add_net(net_name:, net_class: 'Default')
     @nets << net_name
     # add net to net_class:
     if net_class
-      @net_classes[net_class].nets << net_name
+      # @net_classes[net_class].nets << net_name
+      @net_classes[net_class].add_net net_name
     end
   end
 
