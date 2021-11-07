@@ -108,11 +108,6 @@ class KicadPcb
   def initialize()
     @header = Header.new
     @header.set_defaults
-    ## @general = []           #=> some sort of structure defined in KicadPcb !!!!
-    ##TODO: Should this be handled some other way, like everything else????
-    #@general = OpenStruct.new(
-    #  thickness: '1.6'.to_d,
-    #)
     @general = General.new(self)
     @general.set_defaults
     # The docs consider this a part of the General Section, even though it's a separate item!
@@ -160,21 +155,21 @@ class KicadPcb
     @nets << net_name
     # add net to net_class:
     if net_class
-      # @net_classes[net_class].nets << net_name
       @net_classes[net_class].add_net net_name
     end
   end
 
-  def add_module
-    #TODO: Implement this!
+  def add_part(part_hash)
+    @parts.add_part(part_hash) # simple
+  end
+  alias add_module add_part
+
+  def add_graphic_item(graphic_item_hash)
+    @graphic_items.add_graphic_item(graphic_item_hash) # simple
   end
 
-  def add_graphic_item
-    #TODO: Implement this!
-  end
-
-  def add_track
-    #TODO: Implement this!
+  def add_track(track_hash)
+    @tracks.add_track(track_hash) # simple
   end
 
   def add_zone
@@ -311,6 +306,7 @@ require_relative "kicad_pcb/version" #FIXME: Why is this at the end????
 
 
 
+#FIXME: I don't think the following is correct anymore... Should I fix it? Or remove these notes?
 
 # # If you make a new instance of KicadPcb, for example like so:
 #
