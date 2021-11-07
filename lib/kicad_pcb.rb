@@ -122,6 +122,7 @@ class KicadPcb
     @setup = Setup.new
     @setup.set_default_setup
     @nets = Nets.new
+    @nets.set_default_net
     @net_classes = NetClasses.new
     @net_classes.add_default_net_class
     @parts = Parts.new
