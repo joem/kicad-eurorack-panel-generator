@@ -50,7 +50,7 @@ class KicadPcb
       @setup[:pcbplotparams][:usegerberadvancedattributes] = false
       @setup[:pcbplotparams][:creategerberjobfile] = false
       @setup[:pcbplotparams][:excludeedgelayer] = true
-      @setup[:pcbplotparams][:linewidth] = '0.150000'
+      @setup[:pcbplotparams][:linewidth] = '0.100000'
       @setup[:pcbplotparams][:plotframeref] = false
       @setup[:pcbplotparams][:viasonmask] = false
       @setup[:pcbplotparams][:mode] = 1
