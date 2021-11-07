@@ -17,8 +17,8 @@ class KicadPcb
       # header contains the opening parentheses (but should it???) #TODO: maybe change this?
       the_output << @kicad_pcb_object.header.to_sexpr
       the_output << conditional_newline(str: the_output.last, newlines: 2)
-      # the_output << indent(@kicad_pcb_object.general.to_sexpr, 2)
-      # the_output << conditional_newline(str: the_output.last)
+      the_output << indent(@kicad_pcb_object.general.to_sexpr, 2)
+      the_output << conditional_newline(str: the_output.last, newlines: 2)
       the_output << indent(@kicad_pcb_object.page.to_sexpr, 2)
       the_output << conditional_newline(str: the_output.last)
       the_output << indent(@kicad_pcb_object.layers.to_sexpr, 2)

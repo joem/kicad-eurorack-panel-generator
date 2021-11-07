@@ -8,6 +8,7 @@ require_relative 'kicad_pcb/writer'
 # require_relative 'kicad_pcb/graphic_item' # required in graphic_items
 require_relative 'kicad_pcb/graphic_items'
 require_relative 'kicad_pcb/header'
+require_relative 'kicad_pcb/general'
 # require_relative 'kicad_pcb/layer' # required in layers
 require_relative 'kicad_pcb/layers'
 # require_relative 'kicad_pcb/net_class' # required in net_classes
@@ -107,11 +108,13 @@ class KicadPcb
   def initialize()
     @header = Header.new
     @header.set_defaults
-    # @general = []           #=> some sort of structure defined in KicadPcb !!!!
-    #TODO: Should this be handled some other way, like everything else????
-    @general = OpenStruct.new(
-      thickness: '1.6'.to_d,
-    )
+    ## @general = []           #=> some sort of structure defined in KicadPcb !!!!
+    ##TODO: Should this be handled some other way, like everything else????
+    #@general = OpenStruct.new(
+    #  thickness: '1.6'.to_d,
+    #)
+    @general = General.new(self)
+    @general.set_defaults
     # The docs consider this a part of the General Section, even though it's a separate item!
     @page = Page.new
     @layers = Layers.new
