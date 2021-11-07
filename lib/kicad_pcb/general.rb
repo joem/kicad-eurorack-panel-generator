@@ -18,18 +18,14 @@ class KicadPcb
     end
 
     def set_defaults
-      @thickness = Param['0.15']
+      @thickness = Param['1.6']
       # No other defaults to set since the other params are calculated
     end
 
     def to_sexpr
-      # Output the opening (setup line
-      # Iterate over hash and output them
-      # Output closing )
       output = ''
       output << '(general'
       output << "\n"
-      # output << indent(render_hash(@setup), 2)
       output << "  (thickness #{@thickness.to_s})"
       output << "\n"
       output << "  (drawings #{drawings.to_i})"
@@ -43,32 +39,26 @@ class KicadPcb
       output << "  (nets #{nets.to_i})"
       output << "\n"
       output << ')'
-      #TODO: Figure out why the last two ) are indented one level too much.
       return output
     end
 
     def drawings
-      # @instantiator.graphic_items.size
       @instantiator.instance_variable_get(:@graphic_items).size
     end
 
     def tracks
-      # @instantiator.tracks.size
       @instantiator.instance_variable_get(:@tracks).size
     end
 
     def zones
-      # @instantiator.zones.size
       @instantiator.instance_variable_get(:@zones).size
     end
 
     def modules
-      # @instantiator.parts.size
       @instantiator.instance_variable_get(:@parts).size
     end
 
     def nets
-      # @instantiator.nets.size
       @instantiator.instance_variable_get(:@nets).size
     end
 
