@@ -48,8 +48,8 @@ class KicadPcb
 
     private
 
-    # If str, when converted to a string, isn't empty, return a specified number of newlines.
-    # The default number of newlines is 1.
+    # If str (when converted to a string) isn't empty, return a specified
+    # number of newlines, or one newline if not specified.
     def conditional_newline(str:, newlines: 1)
       if str.to_s != ''
         "\n" * newlines
