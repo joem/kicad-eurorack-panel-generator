@@ -58,12 +58,13 @@ class KicadPcb
   #
   #
 
-  # Return a new KicadPcb object once it parses
-  def self.parse()
-    #TODO: Make this work!
-    # Parser.new()
+  # Return a KicadPcb object once it parses
+  def self.parse(file_to_parse)
+    parser = Parser.new
+    #TODO: Make parser.parse actually do parsing (in Parser)!
+    parser.parse file_to_parse
+    return parser.kicad_pcb
   end
-
 
   #FIXME: These are the old module methods.... need to put them somewhere else for the most part!
 
@@ -105,21 +106,32 @@ class KicadPcb
 
 
   #TODO: What are some options that might need to be set upon doing KicadPcb.new?? Add them to the initializer arguments but with defaults.
-  def initialize()
+  def initialize(set_defaults: true)
     @header = Header.new
-    @header.set_defaults
+    if set_defaults
+      @header.set_defaults
+    end
     @general = General.new(self)
-    @general.set_defaults
-    # The docs consider this a part of the General Section, even though it's a separate item!
-    @page = Page.new
+    if set_defaults
+      @general.set_defaults
+    end
+    @page = Page.new # The docs consider this part of General, even though it's a separate item!
     @layers = Layers.new
-    @layers.set_default_layers
+    if set_defaults
+      @layers.set_default_layers
+    end
     @setup = Setup.new
-    @setup.set_default_setup
+    if set_defaults
+      @setup.set_default_setup
+    end
     @nets = Nets.new
-    @nets.set_default_net
+    if set_defaults
+      @nets.set_default_net
+    end
     @net_classes = NetClasses.new
-    @net_classes.add_default_net_class
+    if set_defaults
+      @net_classes.add_default_net_class # maybe do this one regardless??
+    end
     @parts = Parts.new
     @graphic_items = GraphicItems.new
     @tracks = Tracks.new
