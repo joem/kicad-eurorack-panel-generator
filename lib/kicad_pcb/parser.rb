@@ -95,7 +95,10 @@ class KicadPcb
     # raw list without formatting.
 
     def parse_version(the_list)
-      puts "version with size: #{the_list.size}" #DEBUG #FIXME - placeholder
+      if the_list.size != 2
+        raise StandardError.new "Version parser saw wrong number of elements: #{the_list.inspect}"
+      end
+      @kicad_pcb.header.set_version the_list[1]
     end
 
     def parse_host(the_list)
