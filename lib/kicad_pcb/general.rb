@@ -22,6 +22,10 @@ class KicadPcb
       # No other defaults to set since the other params are calculated
     end
 
+    def set_thickness(thickness)
+      @thickness = Param[thickness]
+    end
+
     def to_sexpr
       output = ''
       output << '(general'

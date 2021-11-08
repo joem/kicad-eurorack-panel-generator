@@ -7,18 +7,19 @@ class KicadPcb
     attr_reader :kicad_pcb
     attr_reader :parsed_data
 
-    # TODO: Have variables in the parser for the following, so they can be read from the parsed file's general section and compared to the calculated values:
-    # drawings_count
-    # tracks_count
-    # zones_count
-    # modules_count
-    # nets_count
-
     #TODO: Make parse just take a string, move the file reading out of here!!!
     #        (file reading should be in whatever /bin file calls parse)
     #        (or if it must be here, parse_file needs to be a separate method that calls parse)
     def initialize(file_to_parse = nil)
       @kicad_pcb = KicadPcb.new(set_defaults: false)
+      # These @saved...count variables are for reading the storing what's read
+      # from the General section of the parsed file. That way they can later be
+      # compared to the calculated values froom @kicad_pcb.
+      @saved_drawings_count = nil
+      @saved_tracks_count = nil
+      @saved_zones_count = nil
+      @saved_modules_count = nil
+      @saved_nets_count = nil
       if file_to_parse
         parse file_to_parse
       end
@@ -83,36 +84,56 @@ class KicadPcb
     #      How to make it add the parsed section to @kicad_pcb ?!?!?!
 
     def parse_version(the_list)
-      puts "version with size: #{the_list.size}" #DEBUG #FIXME
+      puts "version with size: #{the_list.size}" #DEBUG #FIXME - placeholder
     end
 
     def parse_host(the_list)
-      puts "host with size: #{the_list.size}" #DEBUG #FIXME
+      puts "host with size: #{the_list.size}" #DEBUG #FIXME - placeholder
     end
 
     def parse_general(the_list)
-      puts "general with size: #{the_list.size}" #DEBUG #FIXME
-      # TODO: Have instance variables for the general things, so they can be read from the parsed file's general section and compared to the calculated values
+      the_list.drop(1).each do |contents|
+        if contents.kind_of?(Array)
+          case contents[0]
+          when :thickness
+            @kicad_pcb.general.set_thickness contents[1]
+          when :drawings
+            @saved_drawings_count = Param[contents[1]]
+          when :tracks
+            @saved_tracks_count = Param[contents[1]]
+          when :zones
+            @saved_zones_count = Param[contents[1]]
+          when :modules
+            @saved_modules_count = Param[contents[1]]
+          when :nets
+            @saved_nets_count = Param[contents[1]]
+          else
+            raise StandardError.new "General parser saw element it did not expect: #{contents.inspect}"
+          end
+        else
+          raise StandardError.new "General parser saw element it did not expect: #{contents.inspect}"
+        end
+      end
     end
 
     def parse_page(the_list)
-      puts "page with size: #{the_list.size}" #DEBUG #FIXME
+      puts "page with size: #{the_list.size}" #DEBUG #FIXME - placeholder
     end
 
     def parse_layers(the_list)
-      puts "layers with size: #{the_list.size}" #DEBUG #FIXME
+      puts "layers with size: #{the_list.size}" #DEBUG #FIXME - placeholder
     end
 
     def parse_setup(the_list)
-      puts "setup with size: #{the_list.size}" #DEBUG #FIXME
+      puts "setup with size: #{the_list.size}" #DEBUG #FIXME - placeholder
     end
 
     def parse_net(the_list)
-      puts "net with size: #{the_list.size}" #DEBUG #FIXME
+      puts "net with size: #{the_list.size}" #DEBUG #FIXME - placeholder
     end
 
     def parse_net_class(the_list)
-      puts "net_class with size: #{the_list.size}" #DEBUG #FIXME
+      puts "net_class with size: #{the_list.size}" #DEBUG #FIXME - placeholder
     end
 
   end
