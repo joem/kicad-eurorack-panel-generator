@@ -5,7 +5,7 @@ class KicadPcb
 
     include Render # Render contains #indent, #render_value, #render_array, and #render_hash
 
-    attr_reader :version
+    attr_reader :version, :host_version
 
     def initialize(header_hash = {})
       @version = Param[header_hash[:version]]
@@ -21,6 +21,10 @@ class KicadPcb
 
     def set_version(version)
       @version = Param[version]
+    end
+
+    def set_host_version(host_version)
+      @host_version = Param[host_version]
     end
 
     def to_sexpr

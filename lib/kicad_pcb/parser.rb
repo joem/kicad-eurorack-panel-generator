@@ -102,7 +102,10 @@ class KicadPcb
     end
 
     def parse_host(the_list)
-      puts "host with size: #{the_list.size}" #DEBUG #FIXME - placeholder
+      if the_list.size != 3
+        raise StandardError.new "Host parser saw wrong number of elements: #{the_list.inspect}"
+      end
+      @kicad_pcb.header.set_host_version the_list[2]
     end
 
     def parse_general(the_list)
