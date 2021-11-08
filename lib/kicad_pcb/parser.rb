@@ -83,6 +83,13 @@ class KicadPcb
     #        or something else??
     #      How to make it add the parsed section to @kicad_pcb ?!?!?!
 
+    private
+
+    # In the following methods, no need to check that the first element is
+    # correct, since that check was already done in #parse
+    # (Or maybe it's worth doing anyway, to be extra careful and make sure we
+    # never call them incorrectly??)
+
     def parse_version(the_list)
       puts "version with size: #{the_list.size}" #DEBUG #FIXME - placeholder
     end
@@ -117,7 +124,10 @@ class KicadPcb
     end
 
     def parse_page(the_list)
-      puts "page with size: #{the_list.size}" #DEBUG #FIXME - placeholder
+      if the_list.size != 2
+        raise StandardError.new "Page parser saw wrong number of elements: #{the_list.size}"
+      end
+      @kicad_pcb.page.set_page the_list[1]
     end
 
     def parse_layers(the_list)
