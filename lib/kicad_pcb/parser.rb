@@ -174,7 +174,37 @@ class KicadPcb
     end
 
     def parse_net_class(the_list)
-      puts "net_class with size: #{the_list.size}" #DEBUG #FIXME - placeholder
+      #TODO: Test this with more net classes! Make sure it works, since I don't
+      #       usually create more in my pcbs.
+      net_class_hash = {
+        name: the_list[1],
+        description: the_list[2]
+      }
+      the_list.drop(3).each do |contents|
+        if contents.kind_of?(Array)
+          case contents[0]
+          when :clearance
+            net_class_hash[:clearance] = contents[1]
+          when :trace_width
+            net_class_hash[:trace_width] = contents[1]
+          when :via_dia
+            net_class_hash[:via_dia] = contents[1]
+          when :via_drill
+            net_class_hash[:via_drill] = contents[1]
+          when :uvia_dia
+            net_class_hash[:uvia_dia] = contents[1]
+          when :uvia_drill
+            net_class_hash[:uvia_drill] = contents[1]
+          when :nets
+            net_class_hash[:nets] = contents[1]
+          else
+            raise StandardError.new "Net Class parser saw element it did not expect: #{contents.inspect}"
+          end
+        else
+          raise StandardError.new "Net Class parser saw element it did not expect: #{contents.inspect}"
+        end
+      end
+      @kicad_pcb.net_classes.add_net_class(net_class_hash)
     end
 
   end
