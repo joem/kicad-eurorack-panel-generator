@@ -157,7 +157,14 @@ class KicadPcb
     end
 
     def parse_net(the_list)
-      puts "net with size: #{the_list.size}" #DEBUG #FIXME - placeholder
+      if the_list.size != 3
+        raise StandardError.new "Net parser saw wrong number of elements: #{the_list.inspect}"
+      end
+      net_hash = {
+        number: the_list[1],
+        name: the_list[2]
+      }
+      @kicad_pcb.nets.set_net(net_hash)
     end
 
     def parse_net_class(the_list)
