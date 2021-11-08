@@ -90,6 +90,10 @@ class KicadPcb
     # (Or maybe it's worth doing anyway, to be extra careful and make sure we
     # never call them incorrectly??)
 
+    # In the following methods, when you need to raise an error, also show the
+    # list that caused the error. Be sure to use #inspect on it so it shows the
+    # raw list without formatting.
+
     def parse_version(the_list)
       puts "version with size: #{the_list.size}" #DEBUG #FIXME - placeholder
     end
@@ -125,13 +129,27 @@ class KicadPcb
 
     def parse_page(the_list)
       if the_list.size != 2
-        raise StandardError.new "Page parser saw wrong number of elements: #{the_list.size}"
+        raise StandardError.new "Page parser saw wrong number of elements: #{the_list.inspect}"
       end
       @kicad_pcb.page.set_page the_list[1]
     end
 
     def parse_layers(the_list)
-      puts "layers with size: #{the_list.size}" #DEBUG #FIXME - placeholder
+      the_list.drop(1).each do |contents|
+        if contents.kind_of?(Array)
+          if contents.size != 3
+            raise StandardError.new "Layers parser saw wrong number of elements: #{contents.inspect}"
+          end
+          layer_hash = {
+            number: contents[0],
+            name: contents[1],
+            type: contents[2]
+          }
+          @kicad_pcb.layers.set_layer(layer_hash)
+        else
+          raise StandardError.new "Layers parser saw element it did not expect: #{contents.inspect}"
+        end
+      end
     end
 
     def parse_setup(the_list)
