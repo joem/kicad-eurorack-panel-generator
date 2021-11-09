@@ -25,21 +25,14 @@ class KicadPcb
       end
     end
 
-    #TODO: Make parse just take a string, move the file reading out of here!!!
-    #        (file reading should be in whatever /bin file calls parse)
-    #        (or if it must be here, parse_file needs to be a separate method that calls parse)
-    #
     # this method should:
-    # - read/parse the file
+    # - parse the string
     # - assign its values to @kicad_pcb
     # - return:
     #   - something truthy upon success
     #   - nil (or false?) if there was a failure to parse
     #       (or should it raise an exception?)
-    # def parse(file_to_parse)
     def parse(string_to_parse)
-      # Assume something else vetted the file before passing it here.
-      # @parsed_data = SexprParser.parse(File.read(file_to_parse))
       @parsed_data = SexprParser.parse(string_to_parse)
       # The parsed data should always start with :kicad_pcb
       unless @parsed_data[0][0] == :kicad_pcb
@@ -79,6 +72,7 @@ class KicadPcb
 
     def parse_file(file_to_parse)
       # Assume something else vetted the file before passing it here?
+      #TODO: Make sure this can handle whatever normal ways a file could be passed.
       parse(File.read(file_to_parse))
     end
 
