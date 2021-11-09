@@ -28,6 +28,14 @@ class KicadPcb
     #TODO: Make parse just take a string, move the file reading out of here!!!
     #        (file reading should be in whatever /bin file calls parse)
     #        (or if it must be here, parse_file needs to be a separate method that calls parse)
+    #
+    # this method should:
+    # - read/parse the file
+    # - assign its values to @kicad_pcb
+    # - return:
+    #   - something truthy upon success
+    #   - nil (or false?) if there was a failure to parse
+    #       (or should it raise an exception?)
     def parse(file_to_parse)
       # Assume something else vetted the file before passing it here.
       @parsed_data = SexprParser.parse(File.read(file_to_parse))
@@ -58,15 +66,13 @@ class KicadPcb
           raise StandardError.new "Parser saw element it did not expect: #{contents[0].inspect}"
         end
       end
-      #TODO:
-      # this should:
-      # - read/parse the file
-      # - assign its values to @kicad_pcb
-      # - compare the saved General values with the calculated ones from @kicad_pcb and warn if different
-      # - return:
-      #   - something truthy upon success
-      #   - nil (or false?) if there was a failure to parse
-      #       (or should it raise an exception?)
+      # Compare the saved General values with the calculated ones from @kicad_pcb and warn if different
+      if parsed_counts_differ_from_calculated?
+        $stderr.puts "Warning: The parsed counts in General differ from the calculated counts."
+      end
+      #TODO: make this return nil or false if any parsing errors?
+      #       (or do I have exceptions that get called at the point of parsing instead?)
+      return @kicad_pcb
     end
 
     #TODO: Depending on how complex this is, maybe make the section parsers into their own classes??
@@ -84,6 +90,17 @@ class KicadPcb
     #      How to make it add the parsed section to @kicad_pcb ?!?!?!
 
     private
+
+    def parsed_counts_differ_from_calculated?
+      response = false # start with false
+      # If any of the following inequalities is true, it turns response true.
+      response ||= (@saved_drawings_count.to_s.to_i != @kicad_pcb.graphic_items.size)
+      response ||= (@saved_tracks_count.to_s.to_i != @kicad_pcb.tracks.size)
+      response ||= (@saved_zones_count.to_s.to_i != @kicad_pcb.zones.size)
+      response ||= (@saved_modules_count.to_s.to_i != @kicad_pcb.parts.size)
+      response ||= (@saved_nets_count.to_s.to_i != @kicad_pcb.nets.size)
+      return response
+    end
 
     # In the following methods, no need to check that the first element is
     # correct, since that check was already done in #parse

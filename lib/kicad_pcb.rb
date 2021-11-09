@@ -38,7 +38,7 @@ class KicadPcb
   attr_reader :setup
   attr_reader :nets
   attr_reader :net_classes
-  attr_reader :modules
+  attr_reader :parts
   attr_reader :graphic_items
   attr_reader :tracks
   attr_reader :zones
