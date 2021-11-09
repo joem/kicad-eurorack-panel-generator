@@ -58,11 +58,21 @@ class KicadPcb
   #
   #
 
-  # Return a KicadPcb object once it parses
-  def self.parse(file_to_parse)
+  # Parse a string.
+  # Return a KicadPcb object once it parses.
+  def self.parse(string_to_parse)
     parser = Parser.new
     #TODO: Make parser.parse actually do parsing (in Parser)!
-    parser.parse file_to_parse
+    parser.parse string_to_parse
+    return parser.kicad_pcb
+  end
+
+  # Parse a file.
+  # Return a KicadPcb object once it parses.
+  def self.parse_file(file_to_parse)
+    parser = Parser.new
+    #TODO: Make parser.parse actually do parsing (in Parser)!
+    parser.parse_file file_to_parse
     return parser.kicad_pcb
   end
 

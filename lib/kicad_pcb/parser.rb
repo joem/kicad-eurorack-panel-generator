@@ -36,9 +36,11 @@ class KicadPcb
     #   - something truthy upon success
     #   - nil (or false?) if there was a failure to parse
     #       (or should it raise an exception?)
-    def parse(file_to_parse)
+    # def parse(file_to_parse)
+    def parse(string_to_parse)
       # Assume something else vetted the file before passing it here.
-      @parsed_data = SexprParser.parse(File.read(file_to_parse))
+      # @parsed_data = SexprParser.parse(File.read(file_to_parse))
+      @parsed_data = SexprParser.parse(string_to_parse)
       # The parsed data should always start with :kicad_pcb
       unless @parsed_data[0][0] == :kicad_pcb
         raise StandardError.new 'Parser did not see :kicad_pcb as first element.'
@@ -73,6 +75,11 @@ class KicadPcb
       #TODO: make this return nil or false if any parsing errors?
       #       (or do I have exceptions that get called at the point of parsing instead?)
       return @kicad_pcb
+    end
+
+    def parse_file(file_to_parse)
+      # Assume something else vetted the file before passing it here?
+      parse(File.read(file_to_parse))
     end
 
     #TODO: Depending on how complex this is, maybe make the section parsers into their own classes??
