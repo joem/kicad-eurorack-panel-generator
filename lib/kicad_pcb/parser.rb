@@ -159,7 +159,29 @@ class KicadPcb
     end
 
     def parse_setup(the_list)
-      puts "setup with size: #{the_list.size}" #DEBUG #FIXME - placeholder
+      the_list.drop(1).each do |contents|
+        if contents.kind_of?(Array)
+          if contents[0] == :pcbplotparams
+            contents.drop(1).each do |pcbplotparams_contents|
+              if pcbplotparams_contents.size != 2
+                raise StandardError.new "Setup parser saw wrong number of elements: #{pcbplotparams_contents.inspect}"
+              end
+              @kicad_pcb.setup[:pcbplotparams] ||= {}
+              @kicad_pcb.setup[:pcbplotparams][pcbplotparams_contents[0]] = pcbplotparams_contents[1]
+            end
+          else
+            if contents.size == 2
+              @kicad_pcb.setup[contents[0]] = contents[1]
+            elsif contents.size == 3
+              @kicad_pcb.setup[contents[0]] = [contents[1], contents[2]]
+            else
+              raise StandardError.new "Setup parser saw wrong number of elements: #{contents.inspect}"
+            end
+          end
+        else
+          raise StandardError.new "Setup parser saw element it did not expect: #{contents.inspect}"
+        end
+      end
     end
 
     def parse_net(the_list)

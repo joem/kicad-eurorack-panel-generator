@@ -8,7 +8,8 @@ class KicadPcb
     include Render # Render contains #indent, #render_value, #render_array, and #render_hash
 
     # Forward some Hash and Enumerable methods straight to the hash
-    def_delegators :@setup, :[], :delete, :each, :include?, :key?, :length, :size
+    def_delegators :@setup, :[], :delete, :each, :include?, :key?, :length, :size, :[]=
+    #TODO: Should I have a #set_option method instead of just delegating #[]= or is there no point?
 
     def initialize(setup_hash = {})
       @setup = setup_hash
