@@ -7,7 +7,7 @@ class KicadPcb
     # include Render # Render contains #indent, #render_value, #render_array, and #render_hash
     attr_reader :page
 
-    def initialize(page = 'A4')
+    def initialize(page = nil)
       @page = Param[page]
     end
 
@@ -15,6 +15,10 @@ class KicadPcb
 
     def set_page(page)
       @page = Param[page]
+    end
+
+    def set_defaults
+      @page = Param['A4']
     end
 
     def to_sexpr

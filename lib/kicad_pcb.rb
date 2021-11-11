@@ -124,6 +124,9 @@ class KicadPcb
       @general.set_defaults
     end
     @page = Page.new # The docs consider this part of General, even though it's a separate item!
+    if set_defaults
+      @page.set_defaults
+    end
     @layers = Layers.new
     if set_defaults
       @layers.set_default_layers
