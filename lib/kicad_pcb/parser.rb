@@ -171,7 +171,7 @@ class KicadPcb
       if the_list.size != 2
         raise StandardError.new "Page parser saw wrong number of elements: #{the_list.inspect}"
       end
-      @kicad_pcb.page.set_page the_list[1]
+      @kicad_pcb.page.set_from_array the_list
     end
 
     def parse_layers(the_list)
@@ -240,6 +240,8 @@ class KicadPcb
       # [:net_class, :Default, "This is the default net class.", [:clearance, :"0.2"], [:trace_width, :"0.25"], [:via_dia, :"0.8"], [:via_drill, :"0.4"], [:uvia_dia, :"0.3"], [:uvia_drill, :"0.1"]]
       #TODO: Test this with more net classes! Make sure it works, since I don't
       #       usually create more in my pcbs.
+      puts "################" #DEBUG #FIXME
+      p the_list #DEBUG #FIXME
       net_class_hash = {
         name: the_list[1],
         description: the_list[2]
@@ -271,7 +273,12 @@ class KicadPcb
       the_list.drop(3).each do |contents|
         if contents.kind_of?(Array)
           if contents.size == 2
-            net_class_hash[contents[0]] = contents[1]
+            if contents[0] == :add_net
+              net_class_hash[:nets] ||= []
+              net_class_hash[:nets] << contents[1]
+            else
+              net_class_hash[contents[0]] = contents[1]
+            end
           elsif contents.size == 3
             net_class_hash[contents[0]] = [contents[1], contents[2]]
           else
