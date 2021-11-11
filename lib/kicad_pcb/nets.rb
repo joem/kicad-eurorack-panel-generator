@@ -25,11 +25,6 @@ class KicadPcb
       end
     end
 
-    ##TODO: Implement this!
-    ##TODO: Make it auto-increment the number!
-    #def add_net(net_name)
-    #end
-
     # Set a net specified by net_hash.
     # net_hash must have the following keys: :number, :name
     def set_net(net_hash)
