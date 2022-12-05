@@ -15,7 +15,7 @@ module SexprParser
     return s_expression
   end
 
-  private
+  # Private methods below
 
   # Find all of the string literals, copy them into an array, and then replace
   # them with a special placeholder string, so that tokens inside literals don't
@@ -31,6 +31,7 @@ module SexprParser
     # Return the modified string and the array of string literals
     return [string, string_literals]
   end
+  private_class_method :extract_string_literals
 
   # Split up the input into its individual tokens by by adding spaces around each
   # opening or closing parentheses and then splitting the string up on whitespace
@@ -40,6 +41,7 @@ module SexprParser
     token_array = string.split(' ')
     return token_array
   end
+  private_class_method :tokenize_string
 
   # add our string literals back into their correct places in the array
   def self.restore_string_literals(token_array, string_literals)
@@ -54,6 +56,7 @@ module SexprParser
       end
     end
   end
+  private_class_method :restore_string_literals
 
   # Parse tokens:
 
@@ -65,18 +68,21 @@ module SexprParser
     # Make sure that the matched pattern consumes the entire token
     match[0].length == string.length
   end
+  private_class_method :is_match?
 
   # Detect a symbol
   def self.is_symbol?(string)
     # Anything other than parentheses, single or double quote and commas
     is_match?(string, /[^\"\'\,\(\)]+/)
   end
+  private_class_method :is_symbol?
 
   # Detect an integer literal
   def self.is_integer_literal?(string)
     # Any number of numerals optionally preceded by a plus or minus sign
     is_match?(string, /[\-\+]?[0-9]+/)
   end
+  private_class_method :is_integer_literal?
 
   # Detect a string literal
   def self.is_string_literal?(string)
@@ -84,6 +90,7 @@ module SexprParser
     # (except if preceded by a backslash), surrounded by quotes
     is_match?(string, /"([^"\\]|\\.)*"/)
   end
+  private_class_method :is_string_literal?
 
   # Convert tokens to desired types
   def self.convert_tokens(token_array)
@@ -101,6 +108,7 @@ module SexprParser
     end
     return converted_tokens
   end
+  private_class_method :convert_tokens
 
   # Recreate the structure into an array of arrays
   def self.re_structure(token_array, offset = 0)
@@ -119,5 +127,6 @@ module SexprParser
     end
     return [offset, struct]
   end
+  private_class_method :re_structure
 
 end
