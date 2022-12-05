@@ -10,12 +10,12 @@ It can also do other related tasks such as generate blank panels and tell you so
 I'm building it in parts, and right now its main use (auto generation of front panels for a pcb) doesn't work yet. That said, some of the parts I've built already might be useful, so I'll list what the files are:
 
 
-## `kicad_eurorack_panel_generator.rb`
+## `bin/kicad_eurorack_panel_generator.rb`
 
 This will be the main program. Right now it's just a placeholder file.
 
 
-## `generate_pcb.rb`
+## `bin/generate_pcb.rb`
 
 This generates a PCB of the specified size. If no size is specified, it makes it 100mm x 100mm, since that's a useful size to have for cheap prototyping.
 
@@ -29,7 +29,7 @@ This generates a PCB of the specified size. If no size is specified, it makes it
             -h, --help                       Show this message
 
 
-## `generate_panel.rb`
+## `bin/generate_panel.rb`
 
 This generates a eurorack panel sized correctly for the specified HP and optional formal (3U / Intellijel 1U / Pulp Logic 1U -- default is 3U).  The panel includes mounting holes.
 
@@ -62,7 +62,7 @@ Mounting hole position options (default: `auto`):
             -h, --help                       Show this message
 
 
-## `generate_panel_from_pcb.rb`
+## `bin/generate_panel_from_pcb.rb`
 
 This will generates a eurorack panel sized correctly to fit the specified PCB. Right now it's just a placeholder.
 
