@@ -23,5 +23,11 @@ describe SexprParser do
     value(SexprParser).wont_respond_to :re_structure
   end
 
+  it "parses s-expressions into nested arrays" do
+    s_expression1 = '(this (is a number 1( example "s-expression")))'
+    expected_array1 = [[:this, [:is, :a, :number, 1, [:example, "s-expression"]]]]
+    value(SexprParser.parse(s_expression1)).must_equal expected_array1
+  end
+
 end
 
