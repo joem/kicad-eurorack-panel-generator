@@ -1,8 +1,8 @@
 require 'bigdecimal'
 require 'bigdecimal/util'
 require 'optparse'
-require_relative './lib/kicad_pcb.rb'
-require_relative './lib/eurorack.rb'
+require_relative '../lib/kicad_pcb.rb'
+require_relative '../lib/eurorack.rb'
 
 # This generates a eurorack panel sized correctly for the specified HP and
 # optional formal (3U / Intellijel 1U / Pulp Logic 1U -- default is 3U).
