@@ -9,6 +9,14 @@ $LOAD_PATH.unshift File.expand_path('../lib', __dir__)
 
 require 'minitest/autorun'
 require 'minitest/spec'
-# require 'minitest/reporters'
 
-# Minitest::Reporters.use!
+# Use minitest-reporters only if installed.
+# https://github.com/minitest-reporters/minitest-reporters
+begin
+  require 'minitest/reporters'
+  # Redgreen-capable version of standard Minitest reporter:
+  reporter_options = { detailed_skip: false }
+  # Minitest::Reporters.use! Minitest::Reporters::DefaultReporter.new
+  Minitest::Reporters.use! Minitest::Reporters::DefaultReporter.new(reporter_options)
+rescue LoadError
+end
